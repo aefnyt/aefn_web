@@ -35,6 +35,9 @@ import {
   Globe2,
   Menu,
   X,
+  ChevronDown,
+  FolderOpen,
+  Globe,
 } from "lucide-react";
 
 /* ============================================================
@@ -73,6 +76,7 @@ export default function Home() {
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [recursosOpen, setRecursosOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -90,6 +94,21 @@ function Navbar() {
     { label: "Calendario", href: "/calendario" },
     { label: "Galería", href: "/galeria" },
     { label: "Nosotros", href: "/nosotros" },
+  ];
+
+  const recursos = [
+    {
+      label: "Material de Estudio",
+      href: "https://drive.google.com/drive/folders/1qMnYS6zYltRx96gtm2YVGF_hamFiRC0d",
+      desc: "Recursos académicos en Google Drive",
+      icon: FolderOpen,
+    },
+    {
+      label: "Vinculación ECFN",
+      href: "https://www.vinculacion-ecfn.com/",
+      desc: "Proyectos de vinculación de la escuela",
+      icon: Globe,
+    },
   ];
 
   return (
@@ -128,6 +147,46 @@ function Navbar() {
               </a>
             </li>
           ))}
+          {/* Dropdown Recursos */}
+          <li
+            className="relative"
+            onMouseEnter={() => setRecursosOpen(true)}
+            onMouseLeave={() => setRecursosOpen(false)}
+          >
+            <button
+              className={`text-sm font-normal transition-colors flex items-center gap-1 ${
+                scrolled ? "text-neutral-300 hover:text-amber-400" : "text-neutral-300 hover:text-amber-400"
+              }`}
+              onClick={() => setRecursosOpen(!recursosOpen)}
+            >
+              Recursos
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${recursosOpen ? "rotate-180" : ""}`} />
+            </button>
+            {recursosOpen && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 w-72">
+                <div className="bg-white shadow-2xl border border-neutral-200">
+                  {recursos.map((r) => (
+                    <a
+                      key={r.label}
+                      href={r.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start gap-3 p-4 hover:bg-neutral-50 transition-colors border-b border-neutral-100 last:border-b-0"
+                    >
+                      <r.icon className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                      <div>
+                        <div className="text-sm font-normal text-neutral-900 flex items-center gap-1.5">
+                          {r.label}
+                          <ExternalLink className="w-3 h-3 text-neutral-400" />
+                        </div>
+                        <div className="text-xs text-neutral-500 font-light mt-0.5">{r.desc}</div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </li>
         </ul>
 
         <button
@@ -157,6 +216,24 @@ function Navbar() {
                 </a>
               </li>
             ))}
+            {/* Recursos en móvil */}
+            <li className="pt-2 mt-2 border-t border-neutral-800">
+              <div className="px-3 py-1.5 text-[10px] text-amber-400/70 uppercase tracking-widest font-light">Recursos</div>
+              {recursos.map((r) => (
+                <a
+                  key={r.label}
+                  href={r.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2.5 text-neutral-300 hover:text-amber-400 transition-colors text-sm"
+                >
+                  <r.icon className="w-4 h-4 text-amber-500" strokeWidth={1.5} />
+                  {r.label}
+                  <ExternalLink className="w-3 h-3 text-neutral-500" />
+                </a>
+              ))}
+            </li>
           </ul>
         </motion.div>
       )}

@@ -31,7 +31,7 @@ const COLABORADORES: Array<{
   periodo?: string;
 }> = [
   {
-    nombre: "Juan Daniel Vasconez Vela",
+    nombre: "Ariel Sebastian Calderon Rodriguez,
     rol: "Desarrollador principal",
     periodo: "2025",
   },
@@ -51,7 +51,7 @@ const DESARROLLO: Array<{
   contribucion: string;
 }> = [
   {
-    nombre: "Juan Daniel Vasconez Vela",
+    nombre: "Ariel Sebastian Calderon Rodriguez",
     contribucion: "Migración a Next.js, panel de administración y backend",
   },
   // Añade más desarrolladores aquí:

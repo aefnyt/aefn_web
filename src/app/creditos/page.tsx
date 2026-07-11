@@ -203,10 +203,10 @@ export default function CreditosPage() {
           <p className="text-neutral-600 max-w-2xl mx-auto leading-relaxed">
             ¿Quieres colaborar con el sitio? Escríbenos a{" "}
             <a
-              href="mailto:decanatoecfn@yachaytech.edu.ec"
+              href="mailto:aefn@yachaytech.edu.ec"
               className="text-amber-600 hover:text-amber-700 underline"
             >
-              decanatoecfn@yachaytech.edu.ec
+              aefn@yachaytech.edu.ec
             </a>{" "}
             o visita nuestro repositorio en{" "}
             <a

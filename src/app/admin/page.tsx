@@ -5,6 +5,7 @@ import { Suspense, useEffect } from "react";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { LoginScreen } from "@/components/admin/login-screen";
 import { AdminDashboard } from "@/components/admin/admin-dashboard";
+import { LoadingScreen } from "@/components/admin/loading-screen";
 
 /**
  * Página /admin — Punto de entrada al panel de administración

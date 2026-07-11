@@ -660,7 +660,7 @@ function Cta() {
             Si eres estudiante de Física o Nanotecnología en Yachay Tech, contribuye al desarrollo científico del país junto a nosotros.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <a href="mailto:decanatoecfn@yachaytech.edu.ec" className="inline-flex items-center gap-2 text-sm font-normal text-neutral-950 bg-amber-400 hover:bg-amber-300 transition-colors px-6 py-3 rounded-sm">
+            <a href="mailto:aefn@yachaytech.edu.ec" className="inline-flex items-center gap-2 text-sm font-normal text-neutral-950 bg-amber-400 hover:bg-amber-300 transition-colors px-6 py-3 rounded-sm">
               <Mail className="w-4 h-4" />
               Contáctanos
             </a>
@@ -716,8 +716,8 @@ function Footer() {
             <ul className="space-y-3 text-sm text-neutral-400 font-light">
               <li className="flex items-start gap-2">
                 <Mail className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-                <a href="mailto:decanatoecfn@yachaytech.edu.ec" className="hover:text-amber-400 transition-colors break-all">
-                  decanatoecfn@yachaytech.edu.ec
+                <a href="mailto:aefn@yachaytech.edu.ec" className="hover:text-amber-400 transition-colors break-all">
+                  aefn@yachaytech.edu.ec
                 </a>
               </li>
               <li className="flex items-start gap-2">

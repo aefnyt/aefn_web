@@ -85,10 +85,11 @@ function Navbar() {
     { label: "Áreas", href: "#areas" },
     { label: "Investigación", href: "#investigacion" },
     { label: "Noticias", href: "/noticias" },
-    { label: "Profesores", href: "/profesores.html" },
-    { label: "Clubes", href: "/clubes.html" },
-    { label: "Calendario", href: "/calendario.html" },
-    { label: "Galería", href: "/galeria.html" },
+    { label: "Profesores", href: "/profesores" },
+    { label: "Clubes", href: "/clubes" },
+    { label: "Calendario", href: "/calendario" },
+    { label: "Galería", href: "/galeria" },
+    { label: "Nosotros", href: "/nosotros" },
   ];
 
   return (
@@ -188,8 +189,9 @@ function Hero() {
   useEffect(() => {
     if (slides.length === 0) return;
     const current = slides[activeIndex];
-    if (!current || current.tipo === "video") return;
-    const dur = current.duracion ?? 6000;
+    if (!current) return;
+    // Imágenes: usan su duración (default 6s). Videos: 20s y luego avanza
+    const dur = current.tipo === "video" ? 20000 : (current.duracion ?? 6000);
     const timer = setTimeout(() => {
       setActiveIndex((i) => (i + 1) % slides.length);
     }, dur);
@@ -1070,9 +1072,10 @@ function Footer() {
                 { label: "Inicio", href: "#inicio" },
                 { label: "Áreas", href: "#areas" },
                 { label: "Investigación", href: "#investigacion" },
-                { label: "Profesores", href: "/profesores.html" },
-                { label: "Clubes", href: "/clubes.html" },
-                { label: "Galería", href: "/galeria.html" },
+                { label: "Profesores", href: "/profesores" },
+                { label: "Clubes", href: "/clubes" },
+                { label: "Galería", href: "/galeria" },
+                { label: "Nosotros", href: "/nosotros" },
               ].map((l) => (
                 <li key={l.label}>
                   <a
@@ -1132,7 +1135,7 @@ function Footer() {
             <div className="flex items-center gap-4">
               <a
                 href="/admin"
-                className="text-neutral-600 hover:text-amber-400 transition-colors font-light"
+                className="text-neutral-300 hover:text-amber-400 transition-colors font-light border-b border-neutral-700 hover:border-amber-400 pb-0.5"
               >
                 Administración
               </a>

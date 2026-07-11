@@ -474,15 +474,29 @@ function Research() {
 }
 
 /* ─── NEWS ─── */
+interface Noticia {
+  id: string; titulo: string; resumen: string; imagen: string;
+  fecha: string; autor: string; categoria: string; destacada: boolean; publicada: boolean;
+}
+const catLabelsHome: Record<string, string> = {
+  "logro-estudiantes": "Logro", "publicacion-cientifica": "Investigación",
+  "evento": "Evento", "anuncio": "Anuncio", "noticia": "Noticia",
+};
+function formatDateHome(fecha: string) {
+  try { return new Date(fecha + "T00:00:00").toLocaleDateString("es-EC", { day: "numeric", month: "long", year: "numeric" }); }
+  catch { return fecha; }
+}
 function News() {
-  const news = [
-    { cat: "Investigación", date: "8 julio 2026", title: "Estudiantes publican en Nature Nanotechnology sobre nanomateriales 2D", excerpt: "Grupo de investigación de la ECFN caracteriza propiedades electrónicas de materiales bidimensionales con aplicaciones en fotovoltaica.", featured: true },
-    { cat: "Evento", date: "5 julio 2026", title: "III Congreso Nacional de Física amplía inscripciones", excerpt: "Inscripciones abiertas hasta el 30 de julio para estudiantes de todo el país." },
-    { cat: "Club", date: "2 julio 2026", title: "Club de Astronomía organiza observación nocturna", excerpt: "Evento abierto al público con telescopios en el campus de Yachay Tech." },
-    { cat: "Académico", date: "28 junio 2026", title: "Defensa de tesis: computación cuántica aplicada", excerpt: "Estudiante defiende trabajo de titulación en algoritmos cuánticos." },
-  ];
-  const featured = news.find((n) => n.featured) || news[0];
-  const rest = news.filter((n) => n !== featured);
+  const [news, setNews] = useState<Noticia[]>([]);
+  useEffect(() => {
+    fetch("/data/noticias.json").then((r) => r.json()).then((data) => {
+      const publicadas = data.filter((n: Noticia) => n.publicada).sort((a: Noticia, b: Noticia) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+      setNews(publicadas);
+    }).catch(() => {});
+  }, []);
+  const featured = news.find((n) => n.destacada) || news[0] || null;
+  const rest = featured ? news.filter((n) => n.id !== featured.id).slice(0, 3) : [];
+  if (news.length === 0) return null;
   return (
     <section className="bg-neutral-950 py-24 lg:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -497,35 +511,41 @@ function News() {
           </a>
         </motion.div>
         <div className="grid lg:grid-cols-2 gap-8">
-          <motion.a href="/noticias" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group block bg-white">
+          {featured && (
+          <motion.a href={`/noticias/${featured.id}`} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group block bg-white">
             <div className="aspect-[16/10] bg-gradient-to-br from-neutral-800 to-neutral-950 overflow-hidden relative">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Atom className="w-20 h-20 text-amber-400/20" strokeWidth={1} />
-              </div>
+              {featured.imagen ? (
+                <img src={`/${featured.imagen}`} alt={featured.titulo} className="w-full h-full object-cover" />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Atom className="w-20 h-20 text-amber-400/20" strokeWidth={1} />
+                </div>
+              )}
               <div className="absolute top-4 left-4 text-xs font-light text-amber-400 uppercase tracking-widest bg-black/40 px-3 py-1">Destacada</div>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-3 mb-3 text-xs">
-                <span className="text-amber-600 font-normal uppercase tracking-wider">{featured.cat}</span>
-                <span className="text-neutral-400 font-light">{featured.date}</span>
+                <span className="text-amber-600 font-normal uppercase tracking-wider">{catLabelsHome[featured.categoria] || featured.categoria}</span>
+                <span className="text-neutral-400 font-light">{formatDateHome(featured.fecha)}</span>
               </div>
-              <h3 className="text-xl font-normal text-neutral-900 mb-3 leading-snug group-hover:text-amber-700 transition-colors">{featured.title}</h3>
-              <p className="text-neutral-600 font-light leading-relaxed mb-4">{featured.excerpt}</p>
+              <h3 className="text-xl font-normal text-neutral-900 mb-3 leading-snug group-hover:text-amber-700 transition-colors">{featured.titulo}</h3>
+              <p className="text-neutral-600 font-light leading-relaxed mb-4">{featured.resumen}</p>
               <span className="inline-flex items-center gap-1.5 text-sm text-amber-600 font-normal">
                 Leer noticia
                 <ArrowRight className="w-3.5 h-3.5" />
               </span>
             </div>
           </motion.a>
+          )}
           <div className="space-y-px bg-neutral-800">
             {rest.map((n, i) => (
-              <motion.a key={n.title} href="/noticias" custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group block bg-white p-6 hover:bg-neutral-50 transition-colors">
+              <motion.a key={n.id} href={`/noticias/${n.id}`} custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group block bg-white p-6 hover:bg-neutral-50 transition-colors">
                 <div className="flex items-center gap-3 mb-2 text-xs">
-                  <span className="text-amber-600 font-normal uppercase tracking-wider">{n.cat}</span>
-                  <span className="text-neutral-400 font-light">{n.date}</span>
+                  <span className="text-amber-600 font-normal uppercase tracking-wider">{catLabelsHome[n.categoria] || n.categoria}</span>
+                  <span className="text-neutral-400 font-light">{formatDateHome(n.fecha)}</span>
                 </div>
-                <h4 className="font-normal text-neutral-900 text-base leading-snug group-hover:text-amber-700 transition-colors mb-2">{n.title}</h4>
-                <p className="text-sm text-neutral-600 font-light line-clamp-2">{n.excerpt}</p>
+                <h4 className="font-normal text-neutral-900 text-base leading-snug group-hover:text-amber-700 transition-colors mb-2">{n.titulo}</h4>
+                <p className="text-sm text-neutral-600 font-light line-clamp-2">{n.resumen}</p>
               </motion.a>
             ))}
           </div>
@@ -536,13 +556,18 @@ function News() {
 }
 
 /* ─── PROFESSORS ─── */
+interface Profesor {
+  nombre: string; titulo: string; area: string[]; foto: string;
+}
+const areaLabelsHome: Record<string, string> = {
+  astronomia: "Astronomía", computacion: "Computación", nanotecnologia: "Nanotecnología",
+  fisica: "Física", optica: "Óptica",
+};
 function Professors() {
-  const profesores = [
-    { nombre: "Dr. Carlos Mendoza", area: "Física Cuántica", iniciales: "CM" },
-    { nombre: "Dra. Ana Lucía Vega", area: "Nanomateriales", iniciales: "AV" },
-    { nombre: "Dr. Pablo Reyes", area: "Astrofísica", iniciales: "PR" },
-    { nombre: "Dra. Sofía Ramírez", area: "Óptica y Fotónica", iniciales: "SR" },
-  ];
+  const [profesores, setProfesores] = useState<Profesor[]>([]);
+  useEffect(() => {
+    fetch("/data/profesores.json").then((r) => r.json()).then((data) => setProfesores(data.slice(0, 4))).catch(() => {});
+  }, []);
   return (
     <section className="bg-white py-24 lg:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -554,15 +579,19 @@ function Professors() {
           </p>
         </motion.div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {profesores.map((p, i) => (
-            <motion.a key={p.nombre} href="/profesores" custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group block">
-              <div className="aspect-[3/4] bg-gradient-to-br from-neutral-100 to-neutral-200 mb-4 overflow-hidden flex items-center justify-center relative">
-                <span className="text-4xl font-light text-neutral-400 group-hover:text-amber-500 transition-colors">{p.iniciales}</span>
-              </div>
-              <h3 className="font-normal text-neutral-900 text-base mb-1 group-hover:text-amber-700 transition-colors">{p.nombre}</h3>
-              <p className="text-xs text-neutral-500 font-light uppercase tracking-wider">{p.area}</p>
-            </motion.a>
-          ))}
+          {profesores.map((p, i) => {
+            const iniciales = p.nombre.split(" ").slice(0, 2).map((n) => n[0]).join("");
+            const areaLabel = p.area && p.area.length > 0 ? (areaLabelsHome[p.area[0]] || p.area[0]) : "";
+            return (
+              <motion.a key={i} href="/profesores" custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group block">
+                <div className="aspect-[3/4] bg-gradient-to-br from-neutral-100 to-neutral-200 mb-4 overflow-hidden flex items-center justify-center relative">
+                  {p.foto ? <img src={p.foto} alt={p.nombre} className="w-full h-full object-cover" /> : <span className="text-4xl font-light text-neutral-400 group-hover:text-amber-500 transition-colors">{iniciales}</span>}
+                </div>
+                <h3 className="font-normal text-neutral-900 text-base mb-1 group-hover:text-amber-700 transition-colors">{p.nombre}</h3>
+                <p className="text-xs text-neutral-500 font-light uppercase tracking-wider">{areaLabel}</p>
+              </motion.a>
+            );
+          })}
         </div>
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mt-12">
           <a href="/profesores" className="inline-flex items-center gap-2 text-sm text-amber-600 hover:text-amber-700 transition-colors font-normal border-b border-amber-400/30 hover:border-amber-400 pb-1">
@@ -576,12 +605,27 @@ function Professors() {
 }
 
 /* ─── EVENTS ─── */
+interface Evento {
+  id: string; titulo: string; descripcion: string; fecha: string;
+  ubicacion: string; tipo: string; estado: string; link: string;
+}
+const tipoLabelsHome: Record<string, string> = {
+  reunion: "Reunión", academico: "Académico", social: "Social", investigacion: "Investigación",
+  taller: "Taller", seminario: "Seminario", charla: "Charla", competencia: "Competencia", otro: "Otro",
+};
+const mesesHome = ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];
 function Events() {
-  const eventos = [
-    { date: "15", month: "JUL", title: "Nanoscience Summer School Yachay 2026", type: "Académico", location: "Campus Yachay Tech" },
-    { date: "22", month: "JUL", title: "Observación astronómica nocturna", type: "Club", location: "Plaza central" },
-    { date: "05", month: "AGO", title: "Defensa de tesis: Materiales 2D", type: "Académico", location: "Auditorio ECFN" },
-  ];
+  const [eventos, setEventos] = useState<Evento[]>([]);
+  useEffect(() => {
+    fetch("/data/events.json").then((r) => r.json()).then((data) => {
+      const now = new Date();
+      const proximos = data
+        .filter((e: Evento) => new Date(e.fecha) >= now)
+        .sort((a: Evento, b: Evento) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
+        .slice(0, 3);
+      setEventos(proximos);
+    }).catch(() => {});
+  }, []);
   return (
     <section className="bg-neutral-950 py-24 lg:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -595,38 +639,46 @@ function Events() {
             <ArrowRight className="w-4 h-4" />
           </a>
         </motion.div>
+        {eventos.length === 0 ? (
+          <p className="text-neutral-500 font-light text-sm">No hay eventos próximos. Revisa el calendario completo.</p>
+        ) : (
         <div className="space-y-px bg-neutral-800">
-          {eventos.map((e, i) => (
-            <motion.a key={e.title} href="/calendario" custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group flex items-center gap-6 bg-neutral-950 hover:bg-neutral-900 transition-colors p-6">
-              <div className="flex-shrink-0 text-center w-16">
-                <div className="text-3xl font-light text-amber-400">{e.date}</div>
-                <div className="text-xs text-neutral-500 uppercase tracking-widest font-light">{e.month}</div>
-              </div>
-              <div className="flex-grow">
-                <div className="text-xs text-amber-400 font-normal uppercase tracking-wider mb-1">{e.type}</div>
-                <h3 className="font-normal text-white text-lg group-hover:text-amber-300 transition-colors">{e.title}</h3>
-                <p className="text-sm text-neutral-400 font-light mt-1 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5" />
-                  {e.location}
-                </p>
-              </div>
-              <ArrowRight className="w-6 h-6 text-neutral-500 group-hover:text-amber-400 group-hover:translate-x-1 transition-all flex-shrink-0" />
-            </motion.a>
-          ))}
+          {eventos.map((e, i) => {
+            const fecha = new Date(e.fecha);
+            return (
+              <motion.a key={e.id} href="/calendario" custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group flex items-center gap-6 bg-neutral-950 hover:bg-neutral-900 transition-colors p-6">
+                <div className="flex-shrink-0 text-center w-16">
+                  <div className="text-3xl font-light text-amber-400">{fecha.getDate()}</div>
+                  <div className="text-xs text-neutral-500 uppercase tracking-widest font-light">{mesesHome[fecha.getMonth()]}</div>
+                </div>
+                <div className="flex-grow">
+                  <div className="text-xs text-amber-400 font-normal uppercase tracking-wider mb-1">{tipoLabelsHome[e.tipo] || e.tipo}</div>
+                  <h3 className="font-normal text-white text-lg group-hover:text-amber-300 transition-colors">{e.titulo}</h3>
+                  {e.ubicacion && (
+                    <p className="text-sm text-neutral-400 font-light mt-1 flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5" />
+                      {e.ubicacion}
+                    </p>
+                  )}
+                </div>
+                <ArrowRight className="w-6 h-6 text-neutral-500 group-hover:text-amber-400 group-hover:translate-x-1 transition-all flex-shrink-0" />
+              </motion.a>
+            );
+          })}
         </div>
+        )}
       </div>
     </section>
   );
 }
 
 /* ─── CLUBS ─── */
+interface Club { id: string; nombre: string; descripcion: string; }
 function Clubs() {
-  const clubes = [
-    { nombre: "Club de Astronomía", desc: "Observaciones, charlas y construcción de telescopios.", icon: Telescope },
-    { nombre: "Club de Robótica", desc: "Diseño y programación de robots para competencias.", icon: Cpu },
-    { nombre: "Club de Óptica", desc: "Experimentos con láseres, holografía y fibra óptica.", icon: Waves },
-    { nombre: "Club de Programación", desc: "Algoritmos, machine learning y física computacional.", icon: Brain },
-  ];
+  const [clubes, setClubes] = useState<Club[]>([]);
+  useEffect(() => {
+    fetch("/data/clubes.json").then((r) => r.json()).then((data) => setClubes(data.slice(0, 4))).catch(() => {});
+  }, []);
   return (
     <section className="bg-white py-24 lg:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -639,10 +691,10 @@ function Clubs() {
         </motion.div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-neutral-200">
           {clubes.map((c, i) => (
-            <motion.a key={c.nombre} href="/clubes" custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group block bg-white p-8 hover:bg-neutral-50 transition-colors">
-              <c.icon className="w-8 h-8 text-amber-500 mb-4 group-hover:text-amber-600 transition-colors" strokeWidth={1.5} />
+            <motion.a key={c.id || i} href="/clubes" custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group block bg-white p-8 hover:bg-neutral-50 transition-colors">
+              <Users className="w-8 h-8 text-amber-500 mb-4 group-hover:text-amber-600 transition-colors" strokeWidth={1.5} />
               <h3 className="font-normal text-neutral-900 text-lg mb-2">{c.nombre}</h3>
-              <p className="text-sm text-neutral-600 font-light leading-relaxed">{c.desc}</p>
+              <p className="text-sm text-neutral-600 font-light leading-relaxed">{c.descripcion}</p>
             </motion.a>
           ))}
         </div>

@@ -31,7 +31,7 @@ const COLABORADORES: Array<{
   periodo?: string;
 }> = [
   {
-    nombre: "Ariel Sebastian Calderon Rodriguez,
+    nombre: "Ariel Sebastian Calderon Rodriguez",
     rol: "Desarrollador principal",
     periodo: "2025",
   },

@@ -318,5 +318,15 @@
     "tipo": "seminario",
     "estado": "proximo",
     "link": ""
+  },
+  {
+    "id": "evento-se-crea-la-pagina-oficial-de-aefn-2026-07-12",
+    "titulo": "Se crea la página oficial de AEFN",
+    "descripcion": "",
+    "fecha": "2026-07-12T15:00",
+    "ubicacion": "",
+    "tipo": "reunion",
+    "estado": "proximo",
+    "link": ""
   }
 ]

@@ -129,6 +129,11 @@ export default function NosotrosPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+              <img
+                src="/images/logos/ecfn-logo.png"
+                alt="ECFN - Escuela de Ciencias Físicas y Nanotecnología"
+                className="h-16 w-auto mb-6 object-contain"
+              />
               <p className="text-amber-600 text-sm font-light tracking-widest uppercase mb-3">Escuela de Ciencias Físicas y Nanotecnología</p>
               <h2 className="text-3xl font-light text-neutral-900 mb-6 leading-tight">Explora lo infinitesimal y lo cósmico</h2>
               <div className="space-y-4 text-neutral-600 font-light leading-relaxed">

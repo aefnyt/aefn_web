@@ -50,7 +50,11 @@ export function Navbar() {
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 group">
-          <Atom className="w-7 h-7 text-amber-400" strokeWidth={1.5} />
+          <img
+            src="/images/logos/ecfn-symbol.png"
+            alt="ECFN"
+            className="w-9 h-9 object-contain group-hover:opacity-80 transition-opacity"
+          />
           <div className="flex flex-col leading-none">
             <span className="font-semibold text-white text-lg tracking-tight">AEFN</span>
             <span className="text-[10px] text-amber-400/70 uppercase tracking-widest font-light">
@@ -109,9 +113,13 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid md:grid-cols-4 gap-10">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <Atom className="w-8 h-8 text-amber-400" strokeWidth={1.5} />
-              <div>
+            <div className="flex items-center gap-4 mb-6">
+              <img
+                src="/images/logos/aefn-logo.png"
+                alt="AEFN"
+                className="h-12 w-auto object-contain"
+              />
+              <div className="border-l border-neutral-700 pl-4">
                 <span className="text-xl font-normal text-white block">AEFN</span>
                 <span className="text-[10px] text-amber-400/70 uppercase tracking-widest font-light">
                   Yachay Tech · Ecuador

@@ -22,7 +22,7 @@ export const GITHUB_CONFIG = {
   /** Dueño del repositorio (la cuenta de GitHub) */
   owner: "aefnyt",
   /** Nombre del repositorio */
-  repo: "web_aefn",
+  repo: "aefn_web",
   /** Rama donde se guardan los cambios */
   branch: "main",
 } as const;

@@ -37,6 +37,7 @@ export function Navbar() {
     { label: "Investigación", href: "/investigacion" },
     { label: "Calendario", href: "/calendario" },
     { label: "Galería", href: "/galeria" },
+    { label: "Nosotros", href: "/nosotros" },
   ];
 
   return (
@@ -136,6 +137,7 @@ export function Footer() {
                 { label: "Investigación", href: "/investigacion" },
                 { label: "Clubes", href: "/clubes" },
                 { label: "Galería", href: "/galeria" },
+                { label: "Nosotros", href: "/nosotros" },
               ].map((l) => (
                 <li key={l.label}>
                   <Link
@@ -233,15 +235,6 @@ export function PageHeader({
         </div>
       </div>
     </section>
-  );
-}
-
-/* ─── Loading ─── */
-export function LoadingState() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-950">
-      <div className="text-amber-400 text-sm font-light animate-pulse">Cargando...</div>
-    </div>
   );
 }
 

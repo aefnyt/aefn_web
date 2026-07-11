@@ -703,6 +703,7 @@ function Footer() {
                 { label: "Clubes", href: "/clubes" },
                 { label: "Galería", href: "/galeria" },
                 { label: "Nosotros", href: "/nosotros" },
+                { label: "Créditos", href: "/creditos" },
               ].map((l) => (
                 <li key={l.label}>
                   <a href={l.href} className="text-neutral-400 hover:text-amber-400 transition-colors font-light">{l.label}</a>

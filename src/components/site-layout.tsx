@@ -138,6 +138,7 @@ export function Footer() {
                 { label: "Clubes", href: "/clubes" },
                 { label: "Galería", href: "/galeria" },
                 { label: "Nosotros", href: "/nosotros" },
+                { label: "Créditos", href: "/creditos" },
               ].map((l) => (
                 <li key={l.label}>
                   <Link

@@ -68,7 +68,63 @@ export default function NosotrosPage() {
           </motion.div>
         </div>
       </section>
-
+      
+      {/* Miembros de la asociación */}
+      <section className="bg-white py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mb-12 max-w-3xl">
+            <p className="text-amber-600 text-sm font-light tracking-widest uppercase mb-3">Equipo</p>
+            <h2 className="text-3xl sm:text-4xl font-light text-neutral-900 leading-tight">Miembros de la asociación</h2>
+          </motion.div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            {[
+              {
+                nombre: "Nombre Apellido 1",
+                cargo: "Presidente",
+                iniciales: "N1",
+                foto: "",
+              },
+              {
+                nombre: "Nombre Apellido 2",
+                cargo: "Vicepresidente",
+                iniciales: "N2",
+                foto: "",
+              },
+              {
+                nombre: "Nombre Apellido 3",
+                cargo: "Secretario",
+                iniciales: "N3",
+                foto: "",
+              },
+              {
+                nombre: "Nombre Apellido 4",
+                cargo: "Tesorero",
+                iniciales: "N4",
+                foto: "",
+              },
+              {
+                nombre: "Nombre Apellido 5",
+                cargo: "Vocal",
+                iniciales: "N5",
+                foto: "",
+              },
+            ].map((m, i) => (
+              <motion.div key={i} custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-center">
+                <div className="aspect-square bg-gradient-to-br from-neutral-100 to-neutral-200 mb-4 overflow-hidden flex items-center justify-center">
+                  {m.foto ? (
+                    <img src={m.foto} alt={m.nombre} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-4xl font-light text-neutral-400">{m.iniciales}</span>
+                  )}
+                </div>
+                <h3 className="font-normal text-neutral-900 text-base mb-1">{m.nombre}</h3>
+                <p className="text-xs text-amber-600 uppercase tracking-wider font-light">{m.cargo}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+      
       <section className="bg-white py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">

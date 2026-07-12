@@ -79,32 +79,32 @@ export default function NosotrosPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {[
               {
-                nombre: "Nombre Apellido 1",
+                nombre: "Sebastian Calderón",
                 cargo: "Presidente",
-                iniciales: "N1",
+                iniciales: "SC",
                 foto: "",
               },
               {
-                nombre: "Nombre Apellido 2",
+                nombre: "Gissel Velasco",
                 cargo: "Vicepresidente",
                 iniciales: "N2",
                 foto: "",
               },
               {
-                nombre: "Nombre Apellido 3",
+                nombre: "Dylan Rodriguez",
                 cargo: "Secretario",
                 iniciales: "N3",
                 foto: "",
               },
               {
-                nombre: "Nombre Apellido 4",
+                nombre: "Santiago Reascos",
                 cargo: "Tesorero",
                 iniciales: "N4",
                 foto: "",
               },
               {
-                nombre: "Nombre Apellido 5",
-                cargo: "Vocal",
+                nombre: "Diana Mora",
+                cargo: "Comunicación",
                 iniciales: "N5",
                 foto: "",
               },

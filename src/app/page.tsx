@@ -513,13 +513,13 @@ function Areas() {
 
 /* ─── RESEARCH ─── */
 function Research() {
-  const lines = [
-    { title: "Materiales Nanoestructurados", desc: "Síntesis, diseño y caracterización de materiales en nanoescala utilizando técnicas avanzadas de fabricación y análisis espectroscópico." },
-    { title: "Ciencia de Materiales Teórica", desc: "Modelado computacional y simulación de propiedades electrónicas, magnéticas y estructurales de materiales novedosos." },
-    { title: "Sistemas Complejos", desc: "Estudio de sistemas dinámicos no lineales, redes complejas y física estadística aplicada a problemas interdisciplinarios." },
-    { title: "Astrofísica y Cosmología", desc: "Investigación teórica en astrofísica, cosmología física y gravitación, con énfasis en materia oscura y energía oscura." },
-    { title: "Óptica y Fotónica", desc: "Estudio de la interacción luz-materia, óptica cuántica y desarrollo de sensores fotónicos para aplicaciones industriales." },
-    { title: "Energía y Sostenibilidad", desc: "Desarrollo de materiales para energía solar, almacenamiento energético y tecnologías limpias con impacto ambiental positivo." },
+    const lines = [
+    { title: "Materiales nanoestructurados, síntesis y caracterización", desc: "Síntesis y caracterización de materiales en nanoescala utilizando diferentes técnicas, correlacionando la caracterización con las propiedades ópticas, magnéticas y eléctricas. Incluye diseño de nanomateriales, análisis espectroscópico, materiales de baja dimensión, nanomateriales aplicados a la sostenibilidad ambiental y energética, fabricación de nano-dispositivos y sensores, y conductancia cuántica." },
+    { title: "Ciencia de materiales teórica", desc: "Modelamiento en la nanoescala de una amplia gama de sistemas. El desarrollo teórico de los materiales permite predecir su comportamiento y aplicaciones tecnológicas. Incluye espectroscopía teórica y modelamiento computacional de materiales a diferentes escalas." },
+    { title: "Física de sistemas complejos e interdisciplinarios", desc: "Estudio de fenómenos colectivos que emergen de la interacción de muchos componentes en un sistema, sin influencia externa ni diseño predeterminado. Campo naturalmente interdisciplinario donde conceptos y herramientas de la física se aplican a sistemas diversos: sincronización, auto-organización, formación de patrones, redes de conectividad." },
+    { title: "Astrofísica, Cosmología y Física Teórica", desc: "Cubre la teoría de la relatividad general y sus aplicaciones astrofísicas. Incluye estudio de modelos inflacionarios, evolución de galaxias, dinámica de plasmas astrofísicos y magnetohidrodinámica, estudio de objetos compactos y mecánica cuántica relativista." },
+    { title: "Desarrollo de instrumentación científica de bajo costo", desc: "Diseño y desarrollo de equipos e instrumentos científicos accesibles, combinando innovación tecnológica con aplicaciones educativas y de investigación. Transferencia de tecnología hacia empresas y comunidad." },
+    { title: "Acústica y Aplicaciones", desc: "Estudio de fenómenos acústicos y sus aplicaciones prácticas, incluyendo desarrollo de sensores, caracterización de materiales y aplicaciones industriales basadas en ondas sonoras." },
   ];
   return (
     <section id="investigacion" className="bg-neutral-950 py-24 lg:py-32">

@@ -22,10 +22,9 @@ export async function POST(request: NextRequest) {
     if (!id || !file) {
       return NextResponse.json({ error: "Faltan: id, file." }, { status: 400 });
     }
-    const validation = validateImage(file);
-    if (!validation.valid) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
-    }
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    validateImage(buffer, file.type);
     const { data: miembros, sha } = await readJsonFile<DepartamentoMember[]>(JSON_PATH);
     const lista = miembros ?? [];
     let index = lista.findIndex((m) => m.id === id);
@@ -40,10 +39,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `No se encontró miembro con id "${id}".` }, { status: 404 });
     }
     const member = lista[index];
-    const processed = await processProfessorPhoto(file);
+    const processed = await processProfessorPhoto(buffer);
     const filename = `${slugify(member.nombre)}.webp`;
     const fullPath = `${IMAGES_PATH}/${filename}`;
-    const uploadResult = await writeBinaryFile(fullPath, processed.buffer, sha);
+    const uploadResult = await writeBinaryFile(fullPath, processed, sha);
     if (!uploadResult.success) {
       return NextResponse.json({ error: uploadResult.message }, { status: 500 });
     }

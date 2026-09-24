@@ -1,16 +1,278 @@
-import { redirect } from "next/navigation";
+"use client";
 
-/**
- * FASE 1 — Servir el sitio estático original
- * ===========================================
- * La ruta "/" redirige a "/index.html", que es servido directamente desde
- * la carpeta public/ como un archivo estático. Esto permite que el sitio
- * original (HTML + CSS Bootstrap + JS) funcione sin cambios, sin que el
- * layout de Next.js (Tailwind, globals.css) interfiera con sus estilos.
- *
- * Las páginas /admin, /noticias y /creditos (que sí usarán React + Tailwind)
- * se añadirán en fases posteriores y tendrán su propio layout.
- */
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
+import {
+  Atom,
+  Beaker,
+  GraduationCap,
+  ArrowRight,
+  Mail,
+  MapPin,
+  ExternalLink,
+  ChevronRight,
+  Menu,
+  X,
+  ChevronDown,
+  FolderOpen,
+  Globe,
+  Telescope,
+  Cpu,
+  Waves,
+  Brain,
+  Users,
+} from "lucide-react";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, delay: i * 0.08, ease: [0.22, 0.61, 0.36, 1] as const },
+  }),
+};
+
 export default function Home() {
-  redirect("/index.html");
+  return (
+    <div className="min-h-screen flex flex-col bg-white">
+      <Navbar />
+      <Hero />
+      <Stats />
+      <Areas />
+      <Research />
+      <News />
+      <Professors />
+      <Events />
+      <Clubs />
+      <Cta />
+      <Footer />
+    </div>
+  );
+}
+
+/* ─── NAVBAR ─── */
+function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [recursosOpen, setRecursosOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const links = [
+    { label: "Inicio", href: "#inicio" },
+    { label: "Áreas", href: "#areas" },
+    { label: "Investigación", href: "#investigacion" },
+    { label: "Noticias", href: "/noticias" },
+    { label: "Profesores", href: "/profesores" },
+    { label: "Clubes", href: "/clubes" },
+    { label: "Calendario", href: "/calendario" },
+    { label: "Galería", href: "/galeria" },
+    { label: "Nosotros", href: "/nosotros" },
+  ];
+
+  const recursos = [
+    { label: "Material de Estudio", href: "https://drive.google.com/drive/folders/1qMnYS6zYltRx96gtm2YVGF_hamFiRC0d", desc: "Recursos académicos en Google Drive", icon: FolderOpen },
+    { label: "Vinculación ECFN", href: "https://www.vinculacion-ecfn.com/", desc: "Proyectos de vinculación de la escuela", icon: Globe },
+  ];
+
+  return (
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "bg-neutral-950/95 backdrop-blur-md border-b border-neutral-800 py-3" : "bg-transparent py-5"}`}>
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-3 group">
+          <img src="/images/logos/ecfn-symbol.png" alt="ECFN" className="w-9 h-9 object-contain group-hover:opacity-80 transition-opacity" />
+          <div className="flex flex-col leading-none">
+            <span className="font-semibold text-white text-lg tracking-tight">AEFN</span>
+            <span className="text-[10px] text-amber-400/70 uppercase tracking-widest font-light">Yachay Tech</span>
+          </div>
+        </Link>
+        <ul className="hidden lg:flex items-center gap-7">
+          {links.map((l, i) => (
+            <li key={l.label}>
+              <a href={l.href} className={`text-sm font-normal transition-colors ${i === 0 ? "text-amber-400" : "text-neutral-300 hover:text-amber-400"}`}>{l.label}</a>
+            </li>
+          ))}
+          <li className="relative" onMouseEnter={() => setRecursosOpen(true)} onMouseLeave={() => setRecursosOpen(false)}>
+            <button className="text-sm font-normal text-neutral-300 hover:text-amber-400 transition-colors flex items-center gap-1" onClick={() => setRecursosOpen(!recursosOpen)}>
+              Recursos <ChevronDown className={`w-3.5 h-3.5 transition-transform ${recursosOpen ? "rotate-180" : ""}`} />
+            </button>
+            {recursosOpen && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 w-72">
+                <div className="bg-white shadow-2xl border border-neutral-200">
+                  {recursos.map((r) => (
+                    <a key={r.label} href={r.href} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 p-4 hover:bg-neutral-50 transition-colors border-b border-neutral-100 last:border-b-0">
+                      <r.icon className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                      <div>
+                        <div className="text-sm font-normal text-neutral-900 flex items-center gap-1.5">{r.label}<ExternalLink className="w-3 h-3 text-neutral-400" /></div>
+                        <div className="text-xs text-neutral-500 font-light mt-0.5">{r.desc}</div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </li>
+        </ul>
+        <button className="lg:hidden text-white" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menú">{mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}</button>
+      </nav>
+      {mobileOpen && (
+        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="lg:hidden bg-neutral-950 border-t border-neutral-800 mt-3">
+          <ul className="px-4 py-4 space-y-1">
+            {links.map((l) => (<li key={l.label}><a href={l.href} onClick={() => setMobileOpen(false)} className="block px-3 py-2.5 text-neutral-300 hover:text-amber-400 transition-colors text-sm">{l.label}</a></li>))}
+            <li className="pt-2 mt-2 border-t border-neutral-800">
+              <div className="px-3 py-1.5 text-[10px] text-amber-400/70 uppercase tracking-widest font-light">Recursos</div>
+              {recursos.map((r) => (<a key={r.label} href={r.href} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-3 py-2.5 text-neutral-300 hover:text-amber-400 transition-colors text-sm"><r.icon className="w-4 h-4 text-amber-500" strokeWidth={1.5} />{r.label}<ExternalLink className="w-3 h-3 text-neutral-500" /></a>))}
+            </li>
+          </ul>
+        </motion.div>
+      )}
+    </header>
+  );
+}
+
+/* ─── HERO ─── */
+interface CarruselSlide { id: string; tipo: "imagen" | "video"; src: string; alt?: string; duracion?: number; }
+function Hero() {
+  const [slides, setSlides] = useState<CarruselSlide[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+
+  useEffect(() => { fetch("/data/carrusel.json", { cache: "no-store" }).then((r) => r.json()).then((data) => setSlides(data)).catch(() => {}); }, []);
+  useEffect(() => {
+    if (slides.length === 0) return;
+    const current = slides[activeIndex];
+    if (!current) return;
+    const dur = current.tipo === "video" ? 20000 : (current.duracion ?? 6000);
+    const timer = setTimeout(() => { setActiveIndex((i) => (i + 1) % slides.length); }, dur);
+    return () => clearTimeout(timer);
+  }, [activeIndex, slides]);
+
+  function buildEmbedUrl(url: string): string | null {
+    if (!url) return null;
+    const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+    if (yt) { const id = yt[1]; return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&modestbranding=1&showinfo=0&rel=0&playsinline=1`; }
+    const vimeo = url.match(/(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)([0-9]+)/);
+    if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}?autoplay=1&muted=1&loop=1&title=0&byline=0&portrait=0`;
+    return null;
+  }
+
+  return (
+    <section id="inicio" ref={heroRef} className="relative h-screen min-h-[600px] overflow-hidden bg-neutral-950">
+      <motion.div style={{ y }} className="absolute inset-0">
+        {slides.map((slide, i) => {
+          const isActive = i === activeIndex;
+          return (
+            <div key={slide.id} className={`absolute inset-0 transition-opacity duration-[2000ms] ${isActive ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+              {slide.tipo === "video" ? (
+                <div className="relative w-full h-full bg-black">
+                  {isActive && (() => { const embed = buildEmbedUrl(slide.src); if (!embed) return null; return (<iframe src={embed} title={slide.alt || "Video AEFN"} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen className="absolute inset-0 w-full h-full border-0" loading="lazy" />); })()}
+                </div>
+              ) : (<img src={slide.src} alt={slide.alt || "AEFN"} className="w-full h-full object-cover" loading="lazy" />)}
+            </div>
+          );
+        })}
+        {slides.length === 0 && (<div className="absolute inset-0 bg-gradient-to-br from-neutral-900 to-neutral-950" />)}
+      </motion.div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70 pointer-events-none" />
+      <motion.div style={{ opacity }} className="relative h-full flex flex-col justify-end max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 z-10">
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="max-w-3xl">
+          <img src="/images/logos/ecfn-logo.png" alt="ECFN" className="h-14 w-auto mb-6 object-contain" />
+          <p className="text-amber-400 text-sm font-light tracking-widest uppercase mb-4">ECFN · Yachay Tech · Ecuador</p>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[1.1] mb-6">Asociación de Estudiantes de <span className="text-amber-400">Física y Nanotecnología</span></h1>
+          <p className="text-lg sm:text-xl text-neutral-200 mb-8 font-light leading-relaxed max-w-2xl">Explora lo infinitesimal y lo cósmico. Comunidad científica estudiantil dedicada a la investigación, la innovación y la difusión del conocimiento.</p>
+          <div className="flex flex-wrap items-center gap-4">
+            <a href="#areas" className="inline-flex items-center gap-2 text-sm font-normal text-neutral-950 bg-amber-400 hover:bg-amber-300 transition-colors px-6 py-3 rounded-sm">Explorar áreas<ArrowRight className="w-4 h-4" /></a>
+            <a href="/noticias" className="inline-flex items-center gap-2 text-sm font-normal text-white border border-white/30 hover:border-amber-400 hover:text-amber-400 transition-colors px-6 py-3 rounded-sm">Ver noticias</a>
+          </div>
+        </motion.div>
+      </motion.div>
+      {slides.length > 1 && (<div className="absolute bottom-8 right-8 z-20 flex gap-2">{slides.map((s, i) => (<button key={s.id} onClick={() => setActiveIndex(i)} className={`h-1 rounded-full transition-all duration-500 ${i === activeIndex ? "w-8 bg-amber-400" : "w-4 bg-white/40 hover:bg-white/70"}`} aria-label={`Slide ${i + 1}`} />))}</div>)}
+    </section>
+  );
+}
+
+/* ─── STATS ─── */
+function Stats() {
+  const stats = [{ value: "240+", label: "Estudiantes" }, { value: "08", label: "Grupos de investigación" }, { value: "06", label: "Clubes estudiantiles" }, { value: "42", label: "Publicaciones" }];
+  return (<section className="bg-neutral-950 border-b border-neutral-800"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><div className="grid grid-cols-2 lg:grid-cols-4 gap-8">{stats.map((s, i) => (<motion.div key={s.label} custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}><div className="text-3xl lg:text-4xl font-light text-amber-400 mb-1">{s.value}</div><div className="text-xs text-neutral-400 uppercase tracking-wider font-light">{s.label}</div></motion.div>))}</div></div></section>);
+}
+
+/* ─── ÁREAS ─── */
+function Areas() {
+  const areas = [
+    { icon: Atom, title: "Física", desc: "Desde la mecánica cuántica hasta la astrofísica. Formación teórica y experimental que desvela las leyes fundamentales del universo.", skills: ["Mecánica clásica y cuántica", "Electromagnetismo y física estadística", "Astrofísica y cosmología", "Sistemas complejos y computacional"], link: "/mallas/Malla-Curricular-Fisica-Ajuste_page-0001.jpg", linkLabel: "Ver malla curricular" },
+    { icon: Beaker, title: "Nanotecnología", desc: "Manipulación de materia a escala nanométrica para crear innovaciones en medicina, energía, electrónica y materiales avanzados.", skills: ["Síntesis de nanomateriales", "Caracterización espectroscópica", "Materiales de baja dimensión", "Ciencia de materiales computacional"], link: "/mallas/Malla-Curricular-Nanotecnologia-Ajuste_page-0001.jpg", linkLabel: "Ver malla curricular" },
+    { icon: GraduationCap, title: "Yachay Tech", desc: "Universidad de Investigación de Tecnología Experimental. Campus de conocimiento en Ecuador dedicado a la ciencia aplicada y la innovación.", skills: ["Programas de pregrado y posgrado", "Investigación interdisciplinaria", "Colaboraciones internacionales", "Vinculación con la comunidad"], link: "https://yachaytech.edu.ec/", external: true, linkLabel: "Visitar sitio" },
+  ];
+  return (<section id="areas" className="bg-white py-24 lg:py-32"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mb-16 max-w-3xl"><p className="text-amber-600 text-sm font-light tracking-widest uppercase mb-3">Áreas</p><h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-neutral-900 mb-4 leading-tight">Pilares de la comunidad</h2><p className="text-neutral-600 text-lg font-light leading-relaxed">Tres ejes que articulan la vida académica y científica de la asociación, inspirados en la tradición investigativa de las mejores escuelas de física del mundo.</p></motion.div><div className="grid lg:grid-cols-3 gap-8">{areas.map((area, i) => (<motion.div key={area.title} custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group"><div className="border-t-2 border-neutral-200 pt-6 group-hover:border-amber-400 transition-colors"><area.icon className="w-8 h-8 text-amber-500 mb-4" strokeWidth={1.5} /><h3 className="text-2xl font-normal text-neutral-900 mb-3">{area.title}</h3><p className="text-neutral-600 font-light leading-relaxed mb-6">{area.desc}</p><ul className="space-y-2 mb-6">{area.skills.map((skill) => (<li key={skill} className="flex items-start gap-2 text-sm text-neutral-700 font-light"><span className="text-amber-500 mt-1.5 w-1 h-1 rounded-full bg-amber-500 flex-shrink-0" /><span>{skill}</span></li>))}</ul><a href={area.link} target={area.external ? "_blank" : undefined} rel={area.external ? "noopener noreferrer" : undefined} className="inline-flex items-center gap-1.5 text-sm text-amber-600 hover:text-amber-700 transition-colors font-normal">{area.linkLabel}{area.external ? <ExternalLink className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}</a></div></motion.div>))}</div></div></section>);
+}
+
+/* ─── RESEARCH ─── */
+function Research() {
+  const lines = [
+    { title: "Materiales nanoestructurados, síntesis y caracterización", desc: "Síntesis y caracterización de materiales en nanoescala utilizando diferentes técnicas, correlacionando la caracterización con las propiedades ópticas, magnéticas y eléctricas. Incluye diseño de nanomateriales, análisis espectroscópico, materiales de baja dimensión, nanomateriales aplicados a la sostenibilidad ambiental y energética, fabricación de nano-dispositivos y sensores, y conductancia cuántica." },
+    { title: "Ciencia de materiales teórica", desc: "Modelamiento en la nanoescala de una amplia gama de sistemas. El desarrollo teórico de los materiales permite predecir su comportamiento y aplicaciones tecnológicas. Incluye espectroscopía teórica y modelamiento computacional de materiales a diferentes escalas." },
+    { title: "Física de sistemas complejos e interdisciplinarios", desc: "Estudio de fenómenos colectivos que emergen de la interacción de muchos componentes en un sistema, sin influencia externa ni diseño predeterminado. Campo naturalmente interdisciplinario donde conceptos y herramientas de la física se aplican a sistemas diversos: sincronización, auto-organización, formación de patrones, redes de conectividad." },
+    { title: "Astrofísica, Cosmología y Física Teórica", desc: "Cubre la teoría de la relatividad general y sus aplicaciones astrofísicas. Incluye estudio de modelos inflacionarios, evolución de galaxias, dinámica de plasmas astrofísicos y magnetohidrodinámica, estudio de objetos compactos y mecánica cuántica relativista." },
+    { title: "Desarrollo de instrumentación científica de bajo costo", desc: "Diseño y desarrollo de equipos e instrumentos científicos accesibles, combinando innovación tecnológica con aplicaciones educativas y de investigación. Transferencia de tecnología hacia empresas y comunidad." },
+    { title: "Acústica y Aplicaciones", desc: "Estudio de fenómenos acústicos y sus aplicaciones prácticas, incluyendo desarrollo de sensores, caracterización de materiales y aplicaciones industriales basadas en ondas sonoras." },
+  ];
+  return (<section id="investigacion" className="bg-neutral-950 py-24 lg:py-32"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mb-16 max-w-3xl"><p className="text-amber-400 text-sm font-light tracking-widest uppercase mb-3">Líneas de investigación</p><h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-white mb-4 leading-tight">Áreas activas de investigación</h2><p className="text-neutral-400 text-lg font-light leading-relaxed">La Escuela de Ciencias Físicas y Nanotecnología desarrolla investigación fundamental y aplicada en líneas alineadas con los desafíos científicos del siglo XXI.</p></motion.div><div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-neutral-800">{lines.map((line, i) => (<motion.div key={line.title} custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="bg-neutral-950 p-8 group cursor-pointer hover:bg-neutral-900 transition-colors"><h3 className="text-lg font-normal text-white mb-3 group-hover:text-amber-400 transition-colors">{line.title}</h3><p className="text-sm text-neutral-400 font-light leading-relaxed">{line.desc}</p></motion.div>))}</div><motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mt-12"><a href="/investigacion" className="inline-flex items-center gap-2 text-sm text-amber-400 hover:text-amber-300 transition-colors font-normal border-b border-amber-400/30 hover:border-amber-400 pb-1">Ver grupos de investigación<ArrowRight className="w-4 h-4" /></a></motion.div></div></section>);
+}
+
+/* ─── NEWS ─── */
+interface Noticia { id: string; titulo: string; resumen: string; imagen: string; fecha: string; autor: string; categoria: string; destacada: boolean; publicada: boolean; }
+const catLabelsHome: Record<string, string> = { "logro-estudiantes": "Logro", "publicacion-cientifica": "Investigación", "evento": "Evento", "anuncio": "Anuncio", "noticia": "Noticia" };
+function formatDateHome(fecha: string) { try { return new Date(fecha + "T00:00:00").toLocaleDateString("es-EC", { day: "numeric", month: "long", year: "numeric" }); } catch { return fecha; } }
+function News() {
+  const [news, setNews] = useState<Noticia[]>([]);
+  useEffect(() => { fetch("/data/noticias.json").then((r) => r.json()).then((data) => { const publicadas = data.filter((n: Noticia) => n.publicada).sort((a: Noticia, b: Noticia) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()); setNews(publicadas); }).catch(() => {}); }, []);
+  const featured = news.find((n) => n.destacada) || news[0] || null;
+  const rest = featured ? news.filter((n) => n.id !== featured.id).slice(0, 3) : [];
+  if (news.length === 0) return null;
+  return (<section className="bg-neutral-950 py-24 lg:py-32"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="flex flex-wrap items-end justify-between gap-4 mb-12"><div className="max-w-2xl"><p className="text-amber-400 text-sm font-light tracking-widest uppercase mb-3">Noticias</p><h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-white leading-tight">Últimas publicaciones</h2></div><a href="/noticias" className="inline-flex items-center gap-1.5 text-sm text-amber-400 hover:text-amber-300 transition-colors font-normal border-b border-amber-400/30 hover:border-amber-400 pb-1">Ver todas<ArrowRight className="w-4 h-4" /></a></motion.div><div className="grid lg:grid-cols-2 gap-8">{featured && (<motion.a href={`/noticias/${featured.id}`} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group block bg-white"><div className="aspect-[16/10] bg-gradient-to-br from-neutral-800 to-neutral-950 overflow-hidden relative">{featured.imagen ? <img src={`/${featured.imagen}`} alt={featured.titulo} className="w-full h-full object-cover" /> : <div className="absolute inset-0 flex items-center justify-center"><Atom className="w-20 h-20 text-amber-400/20" strokeWidth={1} /></div>}<div className="absolute top-4 left-4 text-xs font-light text-amber-400 uppercase tracking-widest bg-black/40 px-3 py-1">Destacada</div></div><div className="p-6"><div className="flex items-center gap-3 mb-3 text-xs"><span className="text-amber-600 font-normal uppercase tracking-wider">{catLabelsHome[featured.categoria] || featured.categoria}</span><span className="text-neutral-400 font-light">{formatDateHome(featured.fecha)}</span></div><h3 className="text-xl font-normal text-neutral-900 mb-3 leading-snug group-hover:text-amber-700 transition-colors">{featured.titulo}</h3><p className="text-neutral-600 font-light leading-relaxed mb-4">{featured.resumen}</p><span className="inline-flex items-center gap-1.5 text-sm text-amber-600 font-normal">Leer noticia<ArrowRight className="w-3.5 h-3.5" /></span></div></motion.a>)}<div className="space-y-px bg-neutral-800">{rest.map((n, i) => (<motion.a key={n.id} href={`/noticias/${n.id}`} custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group block bg-white p-6 hover:bg-neutral-50 transition-colors"><div className="flex items-center gap-3 mb-2 text-xs"><span className="text-amber-600 font-normal uppercase tracking-wider">{catLabelsHome[n.categoria] || n.categoria}</span><span className="text-neutral-400 font-light">{formatDateHome(n.fecha)}</span></div><h4 className="font-normal text-neutral-900 text-base leading-snug group-hover:text-amber-700 transition-colors mb-2">{n.titulo}</h4><p className="text-sm text-neutral-600 font-light line-clamp-2">{n.resumen}</p></motion.a>))}</div></div></div></section>);
+}
+
+/* ─── PROFESSORS ─── */
+interface Profesor { nombre: string; titulo: string; area: string[]; foto: string; }
+const areaLabelsHome: Record<string, string> = { astronomia: "Astronomía", computacion: "Computación", nanotecnologia: "Nanotecnología", fisica: "Física", optica: "Óptica" };
+function Professors() {
+  const [profesores, setProfesores] = useState<Profesor[]>([]);
+  useEffect(() => { fetch("/data/profesores.json").then((r) => r.json()).then((data) => setProfesores(data.slice(0, 4))).catch(() => {}); }, []);
+  return (<section className="bg-white py-24 lg:py-32"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mb-16 max-w-3xl"><p className="text-amber-600 text-sm font-light tracking-widest uppercase mb-3">Cuerpo docente</p><h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-neutral-900 mb-4 leading-tight">Profesores investigadores</h2><p className="text-neutral-600 text-lg font-light leading-relaxed">Académicos que lideran los grupos de investigación de la Escuela de Ciencias Físicas y Nanotecnología.</p></motion.div><div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">{profesores.map((p, i) => { const iniciales = p.nombre.split(" ").slice(0, 2).map((n) => n[0]).join(""); const areaLabel = p.area && p.area.length > 0 ? (areaLabelsHome[p.area[0]] || p.area[0]) : ""; return (<motion.a key={i} href="/profesores" custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group block"><div className="aspect-[3/4] bg-gradient-to-br from-neutral-100 to-neutral-200 mb-4 overflow-hidden flex items-center justify-center relative">{p.foto ? <img src={p.foto} alt={p.nombre} className="w-full h-full object-cover" /> : <span className="text-4xl font-light text-neutral-400 group-hover:text-amber-500 transition-colors">{iniciales}</span>}</div><h3 className="font-normal text-neutral-900 text-base mb-1 group-hover:text-amber-700 transition-colors">{p.nombre}</h3><p className="text-xs text-neutral-500 font-light uppercase tracking-wider">{areaLabel}</p></motion.a>); })}</div><motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mt-12"><a href="/profesores" className="inline-flex items-center gap-2 text-sm text-amber-600 hover:text-amber-700 transition-colors font-normal border-b border-amber-400/30 hover:border-amber-400 pb-1">Ver directorio completo<ArrowRight className="w-4 h-4" /></a></motion.div></div></section>);
+}
+
+/* ─── EVENTS ─── */
+interface Evento { id: string; titulo: string; descripcion: string; fecha: string; ubicacion: string; tipo: string; estado: string; link: string; }
+const tipoLabelsHome: Record<string, string> = { reunion: "Reunión", academico: "Académico", social: "Social", investigacion: "Investigación", taller: "Taller", seminario: "Seminario", charla: "Charla", competencia: "Competencia", otro: "Otro" };
+const mesesHome = ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];
+function Events() {
+  const [eventos, setEventos] = useState<Evento[]>([]);
+  useEffect(() => { fetch("/data/events.json").then((r) => r.json()).then((data) => { const now = new Date(); const proximos = data.filter((e: Evento) => new Date(e.fecha) >= now).sort((a: Evento, b: Evento) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()).slice(0, 3); setEventos(proximos); }).catch(() => {}); }, []);
+  return (<section className="bg-neutral-950 py-24 lg:py-32"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="flex flex-wrap items-end justify-between gap-4 mb-12"><div className="max-w-2xl"><p className="text-amber-400 text-sm font-light tracking-widest uppercase mb-3">Próximos eventos</p><h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-white leading-tight">Agenda científica</h2></div><a href="/calendario" className="inline-flex items-center gap-1.5 text-sm text-amber-400 hover:text-amber-300 transition-colors font-normal border-b border-amber-400/30 hover:border-amber-400 pb-1">Ver calendario<ArrowRight className="w-4 h-4" /></a></motion.div>{eventos.length === 0 ? <p className="text-neutral-500 font-light text-sm">No hay eventos próximos.</p> : (<div className="space-y-px bg-neutral-800">{eventos.map((e, i) => { const fecha = new Date(e.fecha); return (<motion.a key={e.id} href="/calendario" custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group flex items-center gap-6 bg-neutral-950 hover:bg-neutral-900 transition-colors p-6"><div className="flex-shrink-0 text-center w-16"><div className="text-3xl font-light text-amber-400">{fecha.getDate()}</div><div className="text-xs text-neutral-500 uppercase tracking-widest font-light">{mesesHome[fecha.getMonth()]}</div></div><div className="flex-grow"><div className="text-xs text-amber-400 font-normal uppercase tracking-wider mb-1">{tipoLabelsHome[e.tipo] || e.tipo}</div><h3 className="font-normal text-white text-lg group-hover:text-amber-300 transition-colors">{e.titulo}</h3>{e.ubicacion && <p className="text-sm text-neutral-400 font-light mt-1 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{e.ubicacion}</p>}</div><ArrowRight className="w-6 h-6 text-neutral-500 group-hover:text-amber-400 group-hover:translate-x-1 transition-all flex-shrink-0" /></motion.a>); })}</div>)}</div></section>);
+}
+
+/* ─── CLUBS ─── */
+interface Club { id: string; nombre: string; descripcion: string; }
+function Clubs() {
+  const [clubes, setClubes] = useState<Club[]>([]);
+  useEffect(() => { fetch("/data/clubes.json").then((r) => r.json()).then((data) => setClubes(data.slice(0, 4))).catch(() => {}); }, []);
+  return (<section className="bg-white py-24 lg:py-32"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mb-16 max-w-3xl"><p className="text-amber-600 text-sm font-light tracking-widest uppercase mb-3">Vida estudiantil</p><h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-neutral-900 mb-4 leading-tight">Clubes científicos</h2><p className="text-neutral-600 text-lg font-light leading-relaxed">Espacios de aprendizaje colaborativo donde los estudiantes exploran sus intereses científicos más allá del aula.</p></motion.div><div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-neutral-200">{clubes.map((c, i) => (<motion.a key={c.id || i} href="/clubes" custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group block bg-white p-8 hover:bg-neutral-50 transition-colors"><Users className="w-8 h-8 text-amber-500 mb-4 group-hover:text-amber-600 transition-colors" strokeWidth={1.5} /><h3 className="font-normal text-neutral-900 text-lg mb-2">{c.nombre}</h3><p className="text-sm text-neutral-600 font-light leading-relaxed">{c.descripcion}</p></motion.a>))}</div><motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mt-12"><a href="/clubes" className="inline-flex items-center gap-2 text-sm text-amber-600 hover:text-amber-700 transition-colors font-normal border-b border-amber-400/30 hover:border-amber-400 pb-1">Ver todos los clubes<ArrowRight className="w-4 h-4" /></a></motion.div></div></section>);
+}
+
+/* ─── CTA ─── */
+function Cta() {
+  return (<section className="bg-neutral-950 py-24 lg:py-32"><div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center"><motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}><p className="text-amber-400 text-sm font-light tracking-widest uppercase mb-4">Únete a la comunidad</p><h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-white mb-6 leading-tight">Forma parte de la asociación</h2><p className="text-neutral-400 text-lg font-light leading-relaxed mb-10 max-w-2xl mx-auto">Si eres estudiante de Física o Nanotecnología en Yachay Tech, contribuye al desarrollo científico del país junto a nosotros.</p><div className="flex flex-wrap items-center justify-center gap-4"><a href="mailto:aefn@yachaytech.edu.ec" className="inline-flex items-center gap-2 text-sm font-normal text-neutral-950 bg-amber-400 hover:bg-amber-300 transition-colors px-6 py-3 rounded-sm"><Mail className="w-4 h-4" />Contáctanos</a><a href="/nosotros" className="inline-flex items-center gap-2 text-sm font-normal text-white border border-white/30 hover:border-amber-400 hover:text-amber-400 transition-colors px-6 py-3 rounded-sm">Conoce más</a></div></motion.div></div></section>);
+}
+
+/* ─── FOOTER ─── */
+function Footer() {
+  return (<footer className="bg-neutral-950 border-t border-neutral-800"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"><div className="grid md:grid-cols-4 gap-10"><div className="md:col-span-2"><div className="flex items-center gap-4 mb-6"><img src="/images/logos/aefn-logo.png" alt="AEFN" className="h-12 w-auto object-contain" /><div className="border-l border-neutral-700 pl-4"><span className="text-xl font-normal text-white block">AEFN</span><span className="text-[10px] text-amber-400/70 uppercase tracking-widest font-light">Yachay Tech · Ecuador</span></div></div><p className="text-neutral-400 text-sm font-light leading-relaxed max-w-md mb-6">Asociación de Estudiantes de Física y Nanotecnología. Escuela de Ciencias Físicas y Nanotecnología, Universidad de Investigación de Tecnología Experimental Yachay Tech.</p></div><div><h4 className="text-xs text-amber-400 uppercase tracking-widest font-light mb-4">Secciones</h4><ul className="space-y-2.5 text-sm">{[{ label: "Inicio", href: "/" }, { label: "Noticias", href: "/noticias" }, { label: "Profesores", href: "/profesores" }, { label: "Investigación", href: "/investigacion" }, { label: "Clubes", href: "/clubes" }, { label: "Galería", href: "/galeria" }, { label: "Nosotros", href: "/nosotros" }, { label: "Créditos", href: "/creditos" }].map((l) => (<li key={l.label}><a href={l.href} className="text-neutral-400 hover:text-amber-400 transition-colors font-light">{l.label}</a></li>))}</ul></div><div><h4 className="text-xs text-amber-400 uppercase tracking-widest font-light mb-4">Contacto</h4><ul className="space-y-3 text-sm text-neutral-400 font-light"><li className="flex items-start gap-2"><Mail className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" strokeWidth={1.5} /><a href="mailto:aefn@yachaytech.edu.ec" className="hover:text-amber-400 transition-colors break-all">aefn@yachaytech.edu.ec</a></li><li className="flex items-start gap-2"><MapPin className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" strokeWidth={1.5} /><div><div>Yachay City, Urcuquí</div><div>Imbabura, Ecuador</div></div></li><li className="flex items-start gap-2"><ExternalLink className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" strokeWidth={1.5} /><a href="https://yachaytech.edu.ec/" target="_blank" rel="noopener noreferrer" className="hover:text-amber-400 transition-colors">yachaytech.edu.ec</a></li></ul></div></div><div className="border-t border-neutral-800 mt-12 pt-8"><div className="flex flex-wrap items-center justify-between gap-3 text-xs"><span className="text-neutral-500 font-light">© 2026 AEFN · Yachay Tech · ECFN</span><div className="flex items-center gap-4"><a href="/admin" className="text-neutral-300 hover:text-amber-400 transition-colors font-light border-b border-neutral-700 hover:border-amber-400 pb-0.5">Administración</a></div></div></div></div></footer>);
 }

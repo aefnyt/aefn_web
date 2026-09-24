@@ -164,7 +164,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
 
         <div className="text-center mt-6">
           <a
-            href="/"
+            href="/index.html"
             className="aefn-mono text-xs text-amber-400/70 hover:text-amber-300 transition-colors uppercase tracking-wider"
           >
             ← Volver al sitio público

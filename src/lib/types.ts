@@ -26,7 +26,8 @@ export type ModuleKey =
   | "grupos"
   | "noticias"
   | "clubes"
-  | "galeria";
+  | "galeria"
+  | "departamentos";
 
 /** Información sobre un módulo (definida en config.ts) */
 export interface ModuleConfig {
@@ -247,4 +248,25 @@ export interface CarruselSlide {
   alt?: string;
   /** Duración en pantalla en milisegundos (solo imágenes). Default: 4000. */
   duracion?: number;
+}
+
+/* ============================================================
+   MIEMBROS DE DEPARTAMENTOS (gestión estudiantil)
+   ============================================================ */
+
+export const DEPARTAMENTOS = [
+  "Asuntos internos y externos",
+  "Logística",
+  "Bienestar",
+  "Comunicación",
+] as const;
+
+export type DepartamentoName = (typeof DEPARTAMENTOS)[number];
+
+export interface DepartamentoMember {
+  id: string;
+  nombre: string;
+  departamento: DepartamentoName;
+  cargo: string;
+  foto: string;
 }

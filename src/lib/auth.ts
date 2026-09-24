@@ -30,6 +30,7 @@ interface AccessKeysConfig {
   noticias: string;
   clubes: string;
   galeria: string;
+  departamentos: string;
 }
 
 /**
@@ -63,6 +64,7 @@ function loadAccessKeys(): AccessKeysConfig {
       noticias: "noticias-aefn-2025",
       clubes: "clubes-aefn-2025",
       galeria: "galeria-aefn-2025",
+      departamentos: "departamentos-aefn-2025",
     };
   }
 
@@ -117,7 +119,7 @@ export function verifyKey(key: string): {
   if (safeCompare(key, keys.admin)) {
     return {
       valid: true,
-      modules: ["profesores", "eventos", "grupos", "noticias", "clubes", "galeria"],
+      modules: ["profesores", "eventos", "grupos", "noticias", "clubes", "galeria", "departamentos"],
     };
   }
 
@@ -130,6 +132,7 @@ export function verifyKey(key: string): {
     "noticias",
     "clubes",
     "galeria",
+    "departamentos",
   ];
 
   for (const mk of moduleKeys) {

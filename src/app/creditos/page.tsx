@@ -31,7 +31,7 @@ const COLABORADORES: Array<{
   periodo?: string;
 }> = [
   {
-    nombre: "Ariel Sebastian Calderon Rodriguez",
+    nombre: "Juan Daniel Vasconez Vela",
     rol: "Desarrollador principal",
     periodo: "2025",
   },
@@ -51,7 +51,7 @@ const DESARROLLO: Array<{
   contribucion: string;
 }> = [
   {
-    nombre: "Ariel Sebastian Calderon Rodriguez",
+    nombre: "Juan Daniel Vasconez Vela",
     contribucion: "Migración a Next.js, panel de administración y backend",
   },
   // Añade más desarrolladores aquí:
@@ -69,7 +69,7 @@ export default function CreditosPage() {
       <header className="aefn-mesh-dark border-b border-amber-500/20 sticky top-0 z-50 backdrop-blur-xl">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link
-            href="/"
+            href="/index.html"
             className="inline-flex items-center gap-2.5 group"
           >
             <div className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/40 group-hover:shadow-[0_0_18px_rgba(255,215,0,0.6)] transition-shadow overflow-hidden">
@@ -82,7 +82,7 @@ export default function CreditosPage() {
             <span className="font-bold text-white group-hover:text-amber-300 transition-colors">AEFN</span>
           </Link>
           <Link
-            href="/"
+            href="/index.html"
             className="aefn-mono text-xs text-amber-400/80 hover:text-amber-300 flex items-center gap-1.5 uppercase tracking-wider transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
@@ -203,10 +203,10 @@ export default function CreditosPage() {
           <p className="text-neutral-600 max-w-2xl mx-auto leading-relaxed">
             ¿Quieres colaborar con el sitio? Escríbenos a{" "}
             <a
-              href="mailto:aefn@yachaytech.edu.ec"
+              href="mailto:decanatoecfn@yachaytech.edu.ec"
               className="text-amber-600 hover:text-amber-700 underline"
             >
-              aefn@yachaytech.edu.ec
+              decanatoecfn@yachaytech.edu.ec
             </a>{" "}
             o visita nuestro repositorio en{" "}
             <a

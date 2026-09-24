@@ -14,6 +14,7 @@ import {
   Users,
   ArrowRight,
   ExternalLink,
+  Building2,
 } from "lucide-react";
 import { ALL_MODULES } from "@/lib/config";
 import type { ModuleKey } from "@/lib/types";
@@ -35,6 +36,7 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   Newspaper,
   Users,
   Image: ImageIcon,
+  Building2,
 };
 
 export function AdminDashboard() {
@@ -68,7 +70,7 @@ export function AdminDashboard() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Link href="/" target="_blank">
+              <Link href="/index.html" target="_blank">
                 <Button variant="ghost" size="sm" className="text-amber-400/80 hover:text-amber-400 hover:bg-white/5">
                   <ExternalLink className="w-4 h-4 mr-1" />
                   Ver sitio

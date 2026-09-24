@@ -1,8 +1,87 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { Navbar, Footer, PageHeader, fadeUp } from "@/components/site-layout";
 import { Atom, Beaker, GraduationCap, Globe2, Users } from "lucide-react";
+
+interface DepartamentoMember {
+  id: string;
+  nombre: string;
+  departamento: string;
+  cargo: string;
+  foto: string;
+}
+
+function DepartamentosSection() {
+  const [miembros, setMiembros] = useState<DepartamentoMember[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/departamentos")
+      .then((r) => r.json())
+      .then((data) => {
+        setMiembros(data.data || []);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  if (loading || miembros.length === 0) return null;
+
+  const departamentos = [...new Set(miembros.map((m) => m.departamento))];
+
+  function getInitials(nombre: string) {
+    const parts = nombre.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  return (
+    <section className="bg-white py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mb-16 max-w-3xl">
+          <p className="text-amber-600 text-sm font-light tracking-widest uppercase mb-3">Departamentos</p>
+          <h2 className="text-3xl sm:text-4xl font-light text-neutral-900 leading-tight">Equipos de trabajo</h2>
+          <div className="aefn-divider max-w-md !mt-4" />
+        </motion.div>
+
+        {/* Cada departamento como bloque separado */}
+        <div className="space-y-16">
+          {departamentos.map((depto, di) => {
+            const miembrosDepto = miembros.filter((m) => m.departamento === depto);
+            return (
+              <motion.div key={depto} custom={di} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+                {/* Nombre del departamento como título destacado */}
+                <div className="border-t-2 border-amber-400 pt-6 mb-8">
+                  <h3 className="text-2xl font-normal text-neutral-900 mb-1">{depto}</h3>
+                  <p className="text-xs text-neutral-500 font-light">{miembrosDepto.length} {miembrosDepto.length === 1 ? 'integrante' : 'integrantes'}</p>
+                </div>
+
+                {/* Integrantes del departamento */}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {miembrosDepto.map((m, i) => (
+                    <motion.div key={m.id || i} custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-center">
+                      <div className="aspect-square bg-gradient-to-br from-neutral-100 to-neutral-200 mb-4 overflow-hidden flex items-center justify-center rounded-sm">
+                        {m.foto ? (
+                          <img src={m.foto} alt={m.nombre} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-4xl font-light text-neutral-400">{getInitials(m.nombre)}</span>
+                        )}
+                      </div>
+                      <h4 className="font-normal text-neutral-900 text-sm mb-1">{m.nombre}</h4>
+                      {m.cargo && <p className="text-xs text-amber-600 uppercase tracking-wider font-light">{m.cargo}</p>}
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function NosotrosPage() {
   return (
@@ -69,11 +148,11 @@ export default function NosotrosPage() {
         </div>
       </section>
       
-      {/* Miembros de la asociación */}
+      {/* Directiva principal */}
       <section className="bg-white py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mb-12 max-w-3xl">
-            <p className="text-amber-600 text-sm font-light tracking-widest uppercase mb-3">Equipo</p>
+            <p className="text-amber-600 text-sm font-light tracking-widest uppercase mb-3">Directiva principal</p>
             <h2 className="text-3xl sm:text-4xl font-light text-neutral-900 leading-tight">Miembros de la asociación</h2>
           </motion.div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
@@ -124,7 +203,10 @@ export default function NosotrosPage() {
           </div>
         </div>
       </section>
-      
+
+      {/* Departamentos de la AEFN (carga dinámica desde el admin) */}
+      <DepartamentosSection />
+
       <section className="bg-white py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">

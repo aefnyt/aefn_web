@@ -242,10 +242,10 @@ export function Footer() {
               <li className="flex items-start gap-2">
                 <Mail className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                 <a
-                  href="mailto:aefn@yachaytech.edu.ec"
+                  href="mailto:decanatoecfn@yachaytech.edu.ec"
                   className="hover:text-amber-400 transition-colors break-all"
                 >
-                  aefn@yachaytech.edu.ec
+                  decanatoecfn@yachaytech.edu.ec
                 </a>
               </li>
               <li className="flex items-start gap-2">

@@ -22,7 +22,7 @@ export const GITHUB_CONFIG = {
   /** Dueño del repositorio (la cuenta de GitHub) */
   owner: "aefnyt",
   /** Nombre del repositorio */
-  repo: "aefn_web",
+  repo: "web_aefn",
   /** Rama donde se guardan los cambios */
   branch: "main",
 } as const;
@@ -83,6 +83,14 @@ export const MODULES: Record<ModuleKey, ModuleConfig> = {
     jsonPath: "public/data/gallery.json",
     description: "Administrar álbumes y fotos de la galería",
     icon: "Image",
+  },
+  departamentos: {
+    key: "departamentos",
+    label: "Departamentos",
+    jsonPath: "public/data/departamentos.json",
+    imagesPath: "public/images/departamentos",
+    description: "Miembros de departamentos de la AEFN (logística, comunicación, bienestar, asuntos)",
+    icon: "Building2",
   },
 };
 

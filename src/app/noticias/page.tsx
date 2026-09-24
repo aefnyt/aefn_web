@@ -77,7 +77,7 @@ export default async function NoticiasPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link
-                href="/index.html"
+                href="/"
                 className="inline-flex items-center gap-2.5 group"
               >
                 <div className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/40 group-hover:shadow-[0_0_18px_rgba(255,215,0,0.6)] transition-shadow">
@@ -94,7 +94,7 @@ export default async function NoticiasPage() {
               </h1>
             </div>
             <Link
-              href="/index.html"
+              href="/"
               className="aefn-mono text-xs text-amber-400/80 hover:text-amber-300 hidden sm:flex items-center gap-1.5 transition-colors"
             >
               ← <span className="aefn-mono">VOLVER</span>

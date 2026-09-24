@@ -1,0 +1,260 @@
+[
+  {
+    "id": "preguntas-frecuentes#¿qué-es-la-aefn?",
+    "text": "¿Qué es la AEFN?\nLa Asociación de Estudiantes de Física y Nanotecnología (AEFN) es la organización estudiantil que reúne a los estudiantes de las carreras de Física y Nanotecnología de la Escuela de Ciencias Físicas y Nanotecnología (ECFN) de Yachay Tech.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Qué es la AEFN?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿cómo-puedo-unirme-a-la-aefn?",
+    "text": "¿Cómo puedo unirme a la AEFN?\nSi eres estudiante de Física o Nanotecnología en Yachay Tech, ya eres parte de la comunidad. Para participar activamente, escribenos a aefn@yachaytech.edu.ec.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Cómo puedo unirme a la AEFN?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿quiénes-conforman-la-directiva?",
+    "text": "¿Quiénes conforman la directiva?\nLa directiva principal está formada por un Presidente, Vicepresidente, Secretario, Tesorero y encargado de Comunicación. Además hay departamentos de Logística, Comunicación, Bienestar y Asuntos internos y externos.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Quiénes conforman la directiva?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿dónde-encuentro-información-sobre-los-profesores?",
+    "text": "¿Dónde encuentro información sobre los profesores?\nVisita la página /profesores del sitio. Ahí encontrarás el directorio completo con fotos, biografías, áreas de investigación y datos de contacto de cada profesor.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Dónde encuentro información sobre los profesores?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿dónde-veo-las-noticias-de-la-asociación?",
+    "text": "¿Dónde veo las noticias de la asociación?\nEn la página /noticias. La noticia más reciente destacada aparece arriba, y las demás en lista. Puedes hacer clic en cualquier noticia para leer el artículo completo.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Dónde veo las noticias de la asociación?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿cómo-sé-qué-eventos-hay?",
+    "text": "¿Cómo sé qué eventos hay?\nVisita la página /calendario. Ahí verás un calendario mensual con los eventos marcados. También puedes hacer clic en cualquier día para ver los eventos de esa fecha.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Cómo sé qué eventos hay?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿qué-carreras-ofrece-la-ecfn?",
+    "text": "¿Qué carreras ofrece la ECFN?\n- Física (título: Físico/a)\n- Nanotecnología (título: Ingeniero/a en Nanotecnología)\nAmbos programas tienen una duración aproximada de 10 semestres.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Qué carreras ofrece la ECFN?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿dónde-encuentro-las-mallas-curriculares?",
+    "text": "¿Dónde encuentro las mallas curriculares?\nEn la página de inicio, sección \"Áreas\", puedes hacer clic en \"Ver malla curricular\" para cada carrera. También están en la carpeta public/mallas/ del repositorio.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Dónde encuentro las mallas curriculares?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿qué-posgrados-ofrece-la-ecfn?",
+    "text": "¿Qué posgrados ofrece la ECFN?\n- Maestría en Física Fundamental (coordinador: Wladimir Banda)\n- Maestría en Estrategias para la Docencia STEM (coordinador: Eduardo Estévez)",
+    "source": "preguntas-frecuentes",
+    "section": "¿Qué posgrados ofrece la ECFN?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿dónde-encuentro-material-de-estudio?",
+    "text": "¿Dónde encuentro material de estudio?\nEn el menú \"Recursos\" del navbar, haz clic en \"Material de Estudio\". Te llevará a un Google Drive compartido con apuntes, resúmenes, exámenes pasados y más. Cualquier estudiante puede contribuir subiendo sus propios materiales.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Dónde encuentro material de estudio?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿hay-un-drive-colaborativo?",
+    "text": "¿Hay un Drive colaborativo?\nSí. El enlace está en el menú \"Recursos → Material de Estudio\" del sitio web. Puedes subir tus apuntes y descargar los de otros estudiantes.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Hay un Drive colaborativo?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿dónde-está-la-información-de-vinculación?",
+    "text": "¿Dónde está la información de vinculación?\nEn el menú \"Recursos → Vinculación ECFN\" del navbar. Te lleva al sitio web de vinculación de la escuela.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Dónde está la información de vinculación?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿cómo-contacto-a-la-aefn?",
+    "text": "¿Cómo contacto a la AEFN?\nEscribenos a aefn@yachaytech.edu.ec. También puedes encontrar nuestro email en el footer de cualquier página del sitio.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Cómo contacto a la AEFN?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿cómo-contacto-a-un-profesor-específico?",
+    "text": "¿Cómo contacto a un profesor específico?\nVisita la página /profesores, haz clic en la tarjeta del profesor, y verás su email y enlaces a sus perfiles académicos (LinkedIn, Google Scholar, GitHub).",
+    "source": "preguntas-frecuentes",
+    "section": "¿Cómo contacto a un profesor específico?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿quién-administra-el-sitio?",
+    "text": "¿Quién administra el sitio?\nEl sitio lo administra la AEFN. Los cambios se hacen desde el panel de administración (/admin) con claves de acceso. Para solicitar cambios, contacta a aefn@yachaytech.edu.ec.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Quién administra el sitio?"
+  },
+  {
+    "id": "preguntas-frecuentes#¿puedo-contribuir-con-material-al-sitio?",
+    "text": "¿Puedo contribuir con material al sitio?\nSí. Puedes subir apuntes y recursos al Google Drive (menú Recursos). Si quieres publicar una noticia o evento, contacta a la AEFN por correo.",
+    "source": "preguntas-frecuentes",
+    "section": "¿Puedo contribuir con material al sitio?"
+  },
+  {
+    "id": "sitio-web#estructura-del-sitio",
+    "text": "Estructura del sitio\nEl sitio web de la Asociación de Estudiantes de Física y Nanotecnología (AEFN) se divide en las siguientes páginas:",
+    "source": "sitio-web",
+    "section": "Estructura del sitio"
+  },
+  {
+    "id": "sitio-web#página-de-inicio-(/)",
+    "text": "Página de inicio (/)\nMuestra un carrusel con fotos y videos de actividades, estadísticas de la asociación, las áreas académicas (Física, Nanotecnología, Yachay Tech), líneas de investigación, noticias recientes, profesores destacados, próximos eventos y clubes científicos.",
+    "source": "sitio-web",
+    "section": "Página de inicio (/)"
+  },
+  {
+    "id": "sitio-web#noticias-(/noticias)",
+    "text": "Noticias (/noticias)\nLista todas las noticias publicadas, ordenadas por fecha. La noticia destacada aparece en grande. Al hacer clic en una noticia se accede al artículo completo en formato Markdown.",
+    "source": "sitio-web",
+    "section": "Noticias (/noticias)"
+  },
+  {
+    "id": "sitio-web#profesores-(/profesores)",
+    "text": "Profesores (/profesores)\nDirectorio de profesores de la Escuela de Ciencias Físicas y Nanotecnología. Muestra tarjetas con foto, nombre y área. Al hacer clic se abre un modal con biografía, áreas de investigación, educación, publicaciones y redes sociales.",
+    "source": "sitio-web",
+    "section": "Profesores (/profesores)"
+  },
+  {
+    "id": "sitio-web#clubes-(/clubes)",
+    "text": "Clubes (/clubes)\nLista los clubes estudiantiles activos. Cada club muestra su descripción, directiva y actividades.",
+    "source": "sitio-web",
+    "section": "Clubes (/clubes)"
+  },
+  {
+    "id": "sitio-web#investigación-(/investigacion)",
+    "text": "Investigación (/investigacion)\nMuestra los grupos de investigación activos, sus integrantes, proyectos, artículos científicos publicados y tesis defendidas.",
+    "source": "sitio-web",
+    "section": "Investigación (/investigacion)"
+  },
+  {
+    "id": "sitio-web#calendario-(/calendario)",
+    "text": "Calendario (/calendario)\nVista mensual de eventos con grid visual. Los días con eventos muestran puntos de colores según el tipo. También incluye lista de próximos eventos y historial de pasados.",
+    "source": "sitio-web",
+    "section": "Calendario (/calendario)"
+  },
+  {
+    "id": "sitio-web#galería-(/galeria)",
+    "text": "Galería (/galeria)\nÁlbumes de fotos organizados por categoría. Al hacer clic en una foto se abre un lightbox a pantalla completa.",
+    "source": "sitio-web",
+    "section": "Galería (/galeria)"
+  },
+  {
+    "id": "sitio-web#nosotros-(/nosotros)",
+    "text": "Nosotros (/nosotros)\nInformación sobre la AEFN: misión, visión, valores, historia, directiva principal y departamentos (Logística, Comunicación, Bienestar, Asuntos internos y externos).",
+    "source": "sitio-web",
+    "section": "Nosotros (/nosotros)"
+  },
+  {
+    "id": "sitio-web#créditos-(/creditos)",
+    "text": "Créditos (/creditos)\nColaboradores y tecnologías utilizadas en el desarrollo del sitio.",
+    "source": "sitio-web",
+    "section": "Créditos (/creditos)"
+  },
+  {
+    "id": "sitio-web#panel-de-administración-(/admin)",
+    "text": "Panel de administración (/admin)\nAcceso solo para miembros autorizados con claves. Permite gestionar profesores, noticias, eventos, clubes, galería, grupos de investigación y departamentos.",
+    "source": "sitio-web",
+    "section": "Panel de administración (/admin)"
+  },
+  {
+    "id": "sitio-web#recursos",
+    "text": "Recursos\nEn el menú \"Recursos\" del navbar se encuentran:\n- Material de Estudio: enlace a Google Drive con recursos académicos\n- Vinculación ECFN: enlace al sitio de proyectos de vinculación",
+    "source": "sitio-web",
+    "section": "Recursos"
+  },
+  {
+    "id": "sitio-web#contacto",
+    "text": "Contacto\n- Email de la AEFN: aefn@yachaytech.edu.ec\n- Email del decanato: decanatoecfn@yachaytech.edu.ec\n- Ubicación: Yachay City, Urcuquí, Imbabura, Ecuador",
+    "source": "sitio-web",
+    "section": "Contacto"
+  },
+  {
+    "id": "tramites-universitarios#inscripción-de-materias",
+    "text": "Inscripción de materias\nEl registro de materias se realiza al inicio de cada semestre a través del sistema Moodle de pregrado. Cada estudiante tiene asignado un día específico según su nivel y promedio. Consulta el calendario académico en la página oficial de Yachay Tech.",
+    "source": "tramites-universitarios",
+    "section": "Inscripción de materias"
+  },
+  {
+    "id": "tramites-universitarios#calendario-académico",
+    "text": "Calendario académico\nEl calendario académico incluye fechas de inscripción, inicio de clases, semana de exámenes, receso y feriados. Se puede consultar en la página de Yachay Tech o en la sección de Estudiantes del sitio.",
+    "source": "tramites-universitarios",
+    "section": "Calendario académico"
+  },
+  {
+    "id": "tramites-universitarios#solicitud-de-becas",
+    "text": "Solicitud de becas\nYachay Tech ofrece becas por mérito académico, becas deportivas y becas de ayuda económica. Los formularios se solicitan en la oficina de Bienestar Estudiantil. Se requiere mantener un promedio mínimo para conservar la beca.",
+    "source": "tramites-universitarios",
+    "section": "Solicitud de becas"
+  },
+  {
+    "id": "tramites-universitarios#carnil-estudiantil",
+    "text": "Carnil estudiantil\nEl carné estudiantil se tramita en la oficina de Registro. Es necesario para descuentos en transporte y actividades. Se renueva cada semestre.",
+    "source": "tramites-universitarios",
+    "section": "Carnil estudiantil"
+  },
+  {
+    "id": "tramites-universitarios#certificado-de-matrícula",
+    "text": "Certificado de matrícula\nSe solicita en la oficina de Registro. Es gratuito y se entrega en 24-48 horas. Se usa para trámites externos (visas, seguros, descuentos).",
+    "source": "tramites-universitarios",
+    "section": "Certificado de matrícula"
+  },
+  {
+    "id": "tramites-universitarios#constancia-de-estudios",
+    "text": "Constancia de estudios\nSimilar al certificado de matrícula pero más detallado. Incluye materias cursadas y promedio. Se solicita en Registro.",
+    "source": "tramites-universitarios",
+    "section": "Constancia de estudios"
+  },
+  {
+    "id": "tramites-universitarios#cambio-de-carrera",
+    "text": "Cambio de carrera\nSe solicita ante el decano de la escuela correspondiente. Requiere carta de motivación y entrevista. El proceso toma aproximadamente 2 semanas.",
+    "source": "tramites-universitarios",
+    "section": "Cambio de carrera"
+  },
+  {
+    "id": "tramites-universitarios#biblioteca",
+    "text": "Biblioteca\nLa biblioteca ofrece préstamo de libros, acceso a bases de datos científicas, espacios de estudio y computadoras. El horario es de lunes a viernes de 08:00 a 20:00.",
+    "source": "tramites-universitarios",
+    "section": "Biblioteca"
+  },
+  {
+    "id": "tramites-universitarios#bienestar-estudiantil",
+    "text": "Bienestar estudiantil\nOfrece atención psicológica, médica y social. Se encuentra en el edificio principal. Las consultas son confidenciales y gratuitas.",
+    "source": "tramites-universitarios",
+    "section": "Bienestar estudiantil"
+  },
+  {
+    "id": "tramites-universitarios#residencias-estudiantiles",
+    "text": "Residencias estudiantiles\nYachay Tech cuenta con residencias en el campus. La solicitud se hace cada semestre. Hay cupos limitados y se asignan por orden de solicitud y necesidad.",
+    "source": "tramites-universitarios",
+    "section": "Residencias estudiantiles"
+  },
+  {
+    "id": "tramites-universitarios#transporte",
+    "text": "Transporte\nHay buses que conectan el campus con Urcuquí, Ibarra y Quito. Los horarios se publican al inicio de cada semestre. El transporte es gratuito para estudiantes con carné vigente.",
+    "source": "tramites-universitarios",
+    "section": "Transporte"
+  },
+  {
+    "id": "tramites-universitarios#contactos-importantes",
+    "text": "Contactos importantes\n- Decanato ECFN: decanatoecfn@yachaytech.edu.ec\n- Analista administrativo: Evelyn Cifuentes, ecifuentes@yachaytech.edu.ec\n- AEFN: aefn@yachaytech.edu.ec\n- Teléfono general: +593 6299 9500\n- Dirección: San Miguel de Urcuquí, Hacienda San José s/n, Proyecto Yachay",
+    "source": "tramites-universitarios",
+    "section": "Contactos importantes"
+  },
+  {
+    "id": "tramites-universitarios#maestría-en-física-fundamental",
+    "text": "Maestría en Física Fundamental\nCoordinador: Wladimir Banda, Ph.D. — wbanda@yachaytech.edu.ec",
+    "source": "tramites-universitarios",
+    "section": "Maestría en Física Fundamental"
+  },
+  {
+    "id": "tramites-universitarios#maestría-en-estrategias-para-la-docencia-stem",
+    "text": "Maestría en Estrategias para la Docencia STEM\nCoordinador: Eduardo Estévez, Ph.D. — eestevez@yachaytech.edu.ec",
+    "source": "tramites-universitarios",
+    "section": "Maestría en Estrategias para la Docencia STEM"
+  }
+]

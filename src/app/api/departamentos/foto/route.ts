@@ -42,14 +42,16 @@ export async function POST(request: NextRequest) {
     const processed = await processProfessorPhoto(buffer);
     const filename = `${slugify(member.nombre)}.webp`;
     const fullPath = `${IMAGES_PATH}/${filename}`;
-    const uploadResult = await writeBinaryFile(fullPath, processed, sha);
+    const uploadResult = await writeBinaryFile(fullPath, processed, `Upload photo: ${member.nombre}`);
     if (!uploadResult.success) {
       return NextResponse.json({ error: uploadResult.message }, { status: 500 });
     }
     const fotoRelativa = `${IMAGES_PATH.replace("public/", "")}/${filename}`;
     const oldFoto = member.foto;
     member.foto = fotoRelativa;
-    const writeResult = await writeJsonFile(JSON_PATH, lista, sha, `Update foto: ${member.nombre}`);
+    // Re-leer SHA fresco después del commit binario (el SHA anterior quedó obsoleto)
+    const { sha: freshSha } = await readJsonFile<DepartamentoMember[]>(JSON_PATH);
+    const writeResult = await writeJsonFile(JSON_PATH, lista, freshSha, `Update foto: ${member.nombre}`);
     if (!writeResult.success) {
       return NextResponse.json({ error: writeResult.message }, { status: 500 });
     }

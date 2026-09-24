@@ -1,0 +1,1158 @@
+From e3d962bf81d5bce47251a1352b3189f2824c72ca Mon Sep 17 00:00:00 2001
+From: AEFN <aefn@local>
+Date: Thu, 24 Sep 2026 21:44:07 +0000
+Subject: [PATCH] Agregar chatbot gratuito con base de conocimiento (Gemini +
+ RAG)
+
+---
+ .gitignore                        |   4 +-
+ CHATBOT.md                        |  69 ++++++++++++
+ conocimiento/README.md            |  18 ++++
+ conocimiento/faq-ejemplo.md       |  10 ++
+ package.json                      |   8 +-
+ public/calendario.html            |   6 +-
+ public/clubes.html                |   6 +-
+ public/contact.html               |   6 +-
+ public/css/chatbot.css            | 149 ++++++++++++++++++++++++++
+ public/directiva.html             |   6 +-
+ public/galeria.html               |   6 +-
+ public/index.html                 |   6 +-
+ public/investigacion.html         |   6 +-
+ public/js/chatbot.js              | 169 ++++++++++++++++++++++++++++++
+ public/nosotros.html              |   6 +-
+ public/profesores.html            |   6 +-
+ scripts/build-knowledge.mjs       | 162 ++++++++++++++++++++++++++++
+ src/app/api/chat/route.ts         | 137 ++++++++++++++++++++++++
+ src/app/layout.tsx                |   2 +
+ src/components/chatbot-loader.tsx |  11 ++
+ src/lib/chat-search.ts            |  62 +++++++++++
+ 21 files changed, 834 insertions(+), 21 deletions(-)
+ create mode 100644 CHATBOT.md
+ create mode 100644 conocimiento/README.md
+ create mode 100644 conocimiento/faq-ejemplo.md
+ create mode 100644 public/css/chatbot.css
+ create mode 100644 public/js/chatbot.js
+ create mode 100644 scripts/build-knowledge.mjs
+ create mode 100644 src/app/api/chat/route.ts
+ create mode 100644 src/components/chatbot-loader.tsx
+ create mode 100644 src/lib/chat-search.ts
+
+diff --git a/.gitignore b/.gitignore
+index 3d67daa..286de18 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -51,4 +51,6 @@ prompt
+ 
+ server.log
+ # Skills directory
+-/skills/
+\ No newline at end of file
++/skills/
++# chatbot (se genera en cada build)
++/src/data/knowledge.json
+diff --git a/CHATBOT.md b/CHATBOT.md
+new file mode 100644
+index 0000000..b7bfad6
+--- /dev/null
++++ b/CHATBOT.md
+@@ -0,0 +1,69 @@
++# 🤖 Chatbot de la AEFN — Guía rápida
++
++Un asistente flotante (botón azul con borde dorado, abajo a la derecha) que responde
++preguntas usando **tus documentos** y **los datos del sitio**. Costo: **$0**.
++
++## Cómo funciona
++
++```
++Pregunta → busca los fragmentos más parecidos en tus documentos (en tu servidor, gratis)
++         → se los pasa a Google Gemini (plan gratuito) → respuesta
++```
++
++No hay "entrenamiento" pesado: el bot lee tus documentos en cada pregunta (técnica RAG).
++Así, cuando cambias un documento, el bot cambia su respuesta de inmediato tras el despliegue.
++
++## Activarlo (5 minutos)
++
++1. **Clave gratis de Gemini:** entra a https://aistudio.google.com/apikey con una cuenta de Google
++   → *Create API key*. No pide tarjeta.
++2. **Vercel:** proyecto → *Settings* → *Environment Variables* → agrega
++   `GEMINI_API_KEY` = tu clave.
++3. **Redespliega** (o haz cualquier commit).
++
++Sin clave, el chat igual funciona, pero solo muestra los fragmentos encontrados en lugar de redactar una respuesta.
++
++## Agregar documentos
++
++Sube archivos `.pdf`, `.docx`, `.md` o `.txt` a la carpeta **`conocimiento/`** del repositorio
++(desde GitHub: *Add file → Upload files*). Al hacer commit, Vercel redespliega y el bot ya los conoce.
++
++## Variables opcionales
++
++| Variable | Para qué | Valor por defecto |
++|---|---|---|
++| `GEMINI_MODEL` | Cambiar de modelo si Google retira el actual | `gemini-2.5-flash` |
++| `GROQ_API_KEY` | Respaldo gratis si se acaba la cuota de Gemini (https://console.groq.com/keys) | — |
++| `GROQ_MODEL` | Modelo de Groq | `llama-3.3-70b-versatile` |
++| `CHATBOT_MAX_REQUESTS` | Máximo de preguntas por visitante cada 10 min | `25` |
++
++## Límites del plan gratis
++
++Google fija un número de peticiones por minuto y por día para el plan gratuito, y lo cambia de vez en cuando.
++Para una asociación estudiantil suele sobrar. Si un día se agota, el chat no se cae: usa Groq (si lo configuraste)
++o muestra los fragmentos encontrados.
++
++> Nota: en el plan gratuito, Google puede usar las conversaciones para mejorar sus productos.
++> Por eso el bot solo debe tener información pública.
++
++## Archivos
++
++- `conocimiento/` — tus documentos
++- `scripts/build-knowledge.mjs` — convierte documentos en fragmentos (se ejecuta en cada build)
++- `src/lib/chat-search.ts` — buscador de fragmentos
++- `src/app/api/chat/route.ts` — endpoint que habla con Gemini/Groq
++- `public/js/chatbot.js`, `public/css/chatbot.css` — el widget
++
++## Personalizar
++
++- **Personalidad / reglas:** `SYSTEM_PROMPT` en `src/app/api/chat/route.ts`
++- **Mensaje de bienvenida y sugerencias:** arriba de `public/js/chatbot.js`
++- **Colores:** variables `--chat-*` al inicio de `public/css/chatbot.css`
++
++## Probar en tu computadora
++
++```bash
++bun install
++echo "GEMINI_API_KEY=tu_clave" >> .env
++bun run dev
++```
+diff --git a/conocimiento/README.md b/conocimiento/README.md
+new file mode 100644
+index 0000000..1a4368c
+--- /dev/null
++++ b/conocimiento/README.md
+@@ -0,0 +1,18 @@
++# 📚 Documentos del chatbot
++
++Pon aquí los documentos con los que quieres "entrenar" al asistente de la AEFN.
++
++**Formatos aceptados:** `.pdf`, `.docx` (Word), `.md`, `.txt`, `.json`
++
++Puedes crear subcarpetas (por ejemplo `reglamentos/`, `faq/`, `mallas/`).
++
++Cada vez que subes un archivo aquí y haces commit, Vercel vuelve a desplegar el sitio
++y el chatbot aprende el contenido nuevo automáticamente (1–2 minutos).
++
++> ⚠️ Todo lo que pongas aquí puede ser respondido a cualquier visitante.
++> No subas datos privados (cédulas, notas, teléfonos personales, contraseñas).
++
++Consejos:
++- Los PDF escaneados (fotos de papel) **no** tienen texto; pásalos por OCR o cópialos a un `.txt`.
++- Un archivo de preguntas frecuentes (`faq.md`) con pares pregunta/respuesta funciona muy bien.
++- Los datos que editas desde `/admin` (profesores, eventos, clubes, noticias…) ya se incluyen solos.
+diff --git a/conocimiento/faq-ejemplo.md b/conocimiento/faq-ejemplo.md
+new file mode 100644
+index 0000000..10c94df
+--- /dev/null
++++ b/conocimiento/faq-ejemplo.md
+@@ -0,0 +1,10 @@
++# Preguntas frecuentes de la AEFN (ejemplo — edítalo o reemplázalo)
++
++## ¿Qué es la AEFN?
++La AEFN es la Asociación de Estudiantes de Física y Nanotecnología de la Universidad Yachay Tech. Representa a los estudiantes de ambas carreras de la Escuela de Ciencias Físicas y Nanotecnología (ECFN).
++
++## ¿Cómo me uno a un club?
++Revisa los clubes disponibles en la página de Clubes y escribe a la directiva del club que te interese.
++
++## ¿Dónde veo los próximos eventos?
++En la página de Calendario del sitio web.
+diff --git a/package.json b/package.json
+index faca771..3a09ada 100644
+--- a/package.json
++++ b/package.json
+@@ -4,13 +4,15 @@
+   "private": true,
+   "scripts": {
+     "dev": "next dev -p 3000 2>&1 | tee dev.log",
+-    "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
++    "build": "node scripts/build-knowledge.mjs && next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
+     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
+     "lint": "eslint .",
+     "db:push": "prisma db push",
+     "db:generate": "prisma generate",
+     "db:migrate": "prisma migrate dev",
+-    "db:reset": "prisma migrate reset"
++    "db:reset": "prisma migrate reset",
++    "knowledge": "node scripts/build-knowledge.mjs",
++    "predev": "node scripts/build-knowledge.mjs"
+   },
+   "dependencies": {
+     "@dnd-kit/core": "^6.3.1",
+@@ -57,6 +59,7 @@
+     "framer-motion": "^12.23.2",
+     "input-otp": "^1.4.2",
+     "lucide-react": "^0.525.0",
++    "mammoth": "^1.12.3",
+     "next": "^16.1.1",
+     "next-auth": "^4.24.11",
+     "next-intl": "^4.3.4",
+@@ -74,6 +77,7 @@
+     "sonner": "^2.0.6",
+     "tailwind-merge": "^3.3.1",
+     "tailwindcss-animate": "^1.0.7",
++    "unpdf": "^1.8.1",
+     "uuid": "^11.1.0",
+     "vaul": "^1.1.2",
+     "z-ai-web-dev-sdk": "^0.0.18",
+diff --git a/public/calendario.html b/public/calendario.html
+index 3a4015e..760430c 100644
+--- a/public/calendario.html
++++ b/public/calendario.html
+@@ -196,7 +196,8 @@
+                 }
+             }
+         </style>
+-    </head>
++        <link rel="stylesheet" href="css/chatbot.css">
++</head>
+     
+     <body>
+         <main>
+@@ -745,5 +746,6 @@
+                     renderEventsList([]);
+                 });
+         </script>
+-    </body>
++        <script src="js/chatbot.js" defer></script>
++</body>
+ </html>
+\ No newline at end of file
+diff --git a/public/clubes.html b/public/clubes.html
+index 8c6c577..be7aa63 100644
+--- a/public/clubes.html
++++ b/public/clubes.html
+@@ -20,7 +20,8 @@
+         <link href="css/aefn-components.css" rel="stylesheet">
+         <link href="css/aefn-overrides.css" rel="stylesheet">
+         <link href="css/aefn-color-override.css" rel="stylesheet">
+-    </head>
++        <link rel="stylesheet" href="css/chatbot.css">
++</head>
+     
+     <body>
+         <main>
+@@ -196,5 +197,6 @@
+                 PermissionsManager.injectAddButton('clubes', '✚ Agregar Club', 'addClubContainer');
+             });
+         </script>
+-    </body>
++        <script src="js/chatbot.js" defer></script>
++</body>
+ </html>
+\ No newline at end of file
+diff --git a/public/contact.html b/public/contact.html
+index 04f2de2..bd67ba6 100644
+--- a/public/contact.html
++++ b/public/contact.html
+@@ -28,7 +28,8 @@ TemplateMo 590 topic listing
+ https://templatemo.com/tm-590-topic-listing
+ 
+ -->
+-    </head>
++        <link rel="stylesheet" href="css/chatbot.css">
++</head>
+     
+     <body class="topics-listing-page" id="top">
+ 
+@@ -246,5 +247,6 @@ https://templatemo.com/tm-590-topic-listing
+         <script src="js/jquery.sticky.js"></script>
+         <script src="js/custom.js"></script>
+ 
+-    </body>
++        <script src="js/chatbot.js" defer></script>
++</body>
+ </html>
+\ No newline at end of file
+diff --git a/public/css/chatbot.css b/public/css/chatbot.css
+new file mode 100644
+index 0000000..d786a8a
+--- /dev/null
++++ b/public/css/chatbot.css
+@@ -0,0 +1,149 @@
++/* ===== Chatbot AEFN ===== */
++.aefn-chat {
++  --chat-navy: #003366;
++  --chat-navy-deep: #001f3f;
++  --chat-gold: #ffd700;
++  --chat-sky: #e6f3ff;
++  --chat-ink: #1b2733;
++  --chat-muted: #5b6b7c;
++  position: fixed;
++  right: 20px;
++  bottom: 20px;
++  z-index: 1080;
++  font-family: 'Open Sans', system-ui, sans-serif;
++}
++
++.aefn-chat__launcher {
++  width: 60px;
++  height: 60px;
++  border-radius: 50%;
++  border: 3px solid var(--chat-gold);
++  background: var(--chat-navy);
++  color: #fff;
++  display: grid;
++  place-items: center;
++  cursor: pointer;
++  box-shadow: 0 6px 20px rgba(0, 31, 63, 0.35);
++  transition: transform 0.2s ease;
++}
++.aefn-chat__launcher:hover { transform: scale(1.06); }
++.aefn-chat__launcher:focus-visible { outline: 3px solid var(--chat-gold); outline-offset: 3px; }
++.aefn-chat__launcher svg { width: 28px; height: 28px; }
++.aefn-chat.is-open .aefn-chat__launcher { display: none; }
++
++.aefn-chat__panel {
++  display: none;
++  flex-direction: column;
++  width: min(380px, calc(100vw - 32px));
++  height: min(560px, calc(100vh - 110px));
++  background: #fff;
++  border-radius: 18px;
++  overflow: hidden;
++  box-shadow: 0 18px 50px rgba(0, 31, 63, 0.3);
++  border: 1px solid rgba(0, 51, 102, 0.12);
++}
++.aefn-chat.is-open .aefn-chat__panel { display: flex; animation: aefnChatIn 0.22s ease-out; }
++@keyframes aefnChatIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
++@media (prefers-reduced-motion: reduce) {
++  .aefn-chat.is-open .aefn-chat__panel { animation: none; }
++  .aefn-chat__launcher { transition: none; }
++}
++
++.aefn-chat__header {
++  background: var(--chat-navy);
++  color: #fff;
++  padding: 14px 16px;
++  display: flex;
++  align-items: center;
++  gap: 12px;
++  border-bottom: 3px solid var(--chat-gold);
++}
++.aefn-chat__avatar {
++  width: 38px; height: 38px; border-radius: 50%;
++  background: var(--chat-gold); color: var(--chat-navy);
++  display: grid; place-items: center;
++  font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 13px;
++  flex-shrink: 0;
++}
++.aefn-chat__title { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 15px; line-height: 1.2; margin: 0; color: #fff; }
++.aefn-chat__subtitle { font-size: 12px; opacity: 0.8; margin: 2px 0 0; }
++.aefn-chat__close {
++  margin-left: auto; background: transparent; border: 0; color: #fff;
++  width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 22px; line-height: 1;
++}
++.aefn-chat__close:hover { background: rgba(255, 255, 255, 0.12); }
++.aefn-chat__close:focus-visible { outline: 2px solid var(--chat-gold); }
++
++.aefn-chat__messages {
++  flex: 1;
++  overflow-y: auto;
++  padding: 16px;
++  background: #f5f9fd;
++  display: flex;
++  flex-direction: column;
++  gap: 10px;
++}
++.aefn-chat__msg {
++  max-width: 85%;
++  padding: 10px 13px;
++  border-radius: 14px;
++  font-size: 14px;
++  line-height: 1.5;
++  color: var(--chat-ink);
++  word-wrap: break-word;
++}
++.aefn-chat__msg p { margin: 0 0 6px; }
++.aefn-chat__msg p:last-child { margin-bottom: 0; }
++.aefn-chat__msg ul { margin: 4px 0 6px; padding-left: 18px; }
++.aefn-chat__msg a { color: var(--chat-navy); font-weight: 600; }
++.aefn-chat__msg--bot { align-self: flex-start; background: #fff; border: 1px solid rgba(0, 51, 102, 0.1); border-bottom-left-radius: 4px; }
++.aefn-chat__msg--user { align-self: flex-end; background: var(--chat-navy); color: #fff; border-bottom-right-radius: 4px; }
++.aefn-chat__msg--user a { color: var(--chat-gold); }
++
++.aefn-chat__typing { display: inline-flex; gap: 4px; padding: 4px 0; }
++.aefn-chat__typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--chat-muted); opacity: 0.4; animation: aefnDot 1s infinite; }
++.aefn-chat__typing span:nth-child(2) { animation-delay: 0.15s; }
++.aefn-chat__typing span:nth-child(3) { animation-delay: 0.3s; }
++@keyframes aefnDot { 50% { opacity: 1; } }
++
++.aefn-chat__suggestions { display: flex; flex-wrap: wrap; gap: 6px; }
++.aefn-chat__chip {
++  border: 1px solid var(--chat-navy); background: #fff; color: var(--chat-navy);
++  border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer;
++}
++.aefn-chat__chip:hover { background: var(--chat-sky); }
++.aefn-chat__chip:focus-visible { outline: 2px solid var(--chat-navy); outline-offset: 2px; }
++
++.aefn-chat__form { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid rgba(0, 51, 102, 0.1); background: #fff; }
++.aefn-chat__input {
++  flex: 1; border: 1px solid #cfdbe7; border-radius: 12px; padding: 10px 12px;
++  font-size: 14px; resize: none; max-height: 100px; font-family: inherit; color: var(--chat-ink);
++}
++.aefn-chat__input:focus { outline: none; border-color: var(--chat-navy); box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.12); }
++.aefn-chat__send {
++  width: 42px; height: 42px; align-self: flex-end; border-radius: 12px; border: 0;
++  background: var(--chat-navy); color: var(--chat-gold); cursor: pointer; display: grid; place-items: center;
++}
++.aefn-chat__send:disabled { opacity: 0.5; cursor: default; }
++.aefn-chat__send:focus-visible { outline: 3px solid var(--chat-gold); }
++.aefn-chat__send svg { width: 20px; height: 20px; }
++.aefn-chat__note { font-size: 11px; color: var(--chat-muted); text-align: center; padding: 0 12px 8px; background: #fff; margin: 0; }
++
++@media (max-width: 480px) {
++  .aefn-chat { right: 12px; bottom: 12px; }
++  .aefn-chat.is-open { right: 0; bottom: 0; left: 0; top: 0; }
++  .aefn-chat.is-open .aefn-chat__panel { width: 100%; height: 100%; border-radius: 0; }
++}
++
++/* Aislar del CSS del sitio (plantilla aplica tamaños grandes a p, li, a) */
++.aefn-chat p, .aefn-chat li, .aefn-chat a, .aefn-chat strong, .aefn-chat em {
++  font-size: 14px;
++  line-height: 1.5;
++  font-family: inherit;
++  letter-spacing: normal;
++}
++.aefn-chat .aefn-chat__msg p, .aefn-chat .aefn-chat__msg li { color: inherit; }
++.aefn-chat .aefn-chat__title { font-size: 15px; color: #fff; font-family: 'Montserrat', sans-serif; }
++.aefn-chat .aefn-chat__subtitle { font-size: 12px; color: rgba(255, 255, 255, 0.8); }
++.aefn-chat .aefn-chat__note { font-size: 11px; color: var(--chat-muted); }
++.aefn-chat .aefn-chat__msg--user p { color: #fff; }
+diff --git a/public/directiva.html b/public/directiva.html
+index dc3926a..3b822e2 100644
+--- a/public/directiva.html
++++ b/public/directiva.html
+@@ -20,7 +20,8 @@
+         <link href="css/aefn-components.css" rel="stylesheet">
+         <link href="css/aefn-overrides.css" rel="stylesheet">
+         <link href="css/aefn-color-override.css" rel="stylesheet">
+-    </head>
++        <link rel="stylesheet" href="css/chatbot.css">
++</head>
+     
+     <body>
+         <main>
+@@ -170,5 +171,6 @@
+         <script src="js/jquery.sticky.js"></script>
+         <script src="js/click-scroll.js"></script>
+         <script src="js/custom.js"></script>
+-    </body>
++        <script src="js/chatbot.js" defer></script>
++</body>
+ </html>
+\ No newline at end of file
+diff --git a/public/galeria.html b/public/galeria.html
+index 3fc5087..14361d9 100644
+--- a/public/galeria.html
++++ b/public/galeria.html
+@@ -175,7 +175,8 @@
+                 color: #999;
+             }
+         </style>
+-    </head>
++        <link rel="stylesheet" href="css/chatbot.css">
++</head>
+     
+     <body>
+         <main>
+@@ -369,5 +370,6 @@
+                 // Nota: El botón de agregar galería se puede agregar si es necesario
+             });
+         </script>
+-    </body>
++        <script src="js/chatbot.js" defer></script>
++</body>
+ </html>
+diff --git a/public/index.html b/public/index.html
+index f666744..5231f69 100644
+--- a/public/index.html
++++ b/public/index.html
+@@ -32,7 +32,8 @@ TemplateMo 590 topic listing
+ https://templatemo.com/tm-590-topic-listing
+ 
+ -->
+-    </head>
++        <link rel="stylesheet" href="css/chatbot.css">
++</head>
+     
+     <body id="top">
+ 
+@@ -647,5 +648,6 @@ https://templatemo.com/tm-590-topic-listing
+         <script src="js/click-scroll.js"></script>
+         <script src="js/custom.js"></script>
+ 
+-    </body>
++        <script src="js/chatbot.js" defer></script>
++</body>
+ </html>
+diff --git a/public/investigacion.html b/public/investigacion.html
+index de8e4e5..f3f2b2e 100644
+--- a/public/investigacion.html
++++ b/public/investigacion.html
+@@ -11,7 +11,8 @@
+     <link href="css/aefn-components.css" rel="stylesheet">
+     <link href="css/aefn-overrides.css" rel="stylesheet">
+     <link href="css/aefn-color-override.css" rel="stylesheet">
+-  </head>
++      <link rel="stylesheet" href="css/chatbot.css">
++</head>
+   <body>
+     <main>
+       <nav class="navbar navbar-expand-lg">
+@@ -216,5 +217,6 @@
+         }
+       });
+     </script>
+-  </body>
++      <script src="js/chatbot.js" defer></script>
++</body>
+ </html>
+diff --git a/public/js/chatbot.js b/public/js/chatbot.js
+new file mode 100644
+index 0000000..62f5614
+--- /dev/null
++++ b/public/js/chatbot.js
+@@ -0,0 +1,169 @@
++/**
++ * Chatbot AEFN — widget flotante
++ * Se agrega a cualquier página con:
++ *   <link rel="stylesheet" href="css/chatbot.css">
++ *   <script src="js/chatbot.js" defer></script>
++ */
++(function () {
++  if (window.__aefnChatLoaded) return;
++  window.__aefnChatLoaded = true;
++
++  // Carga los estilos si la página no los incluyó
++  if (!document.querySelector('link[href$="chatbot.css"]')) {
++    var css = document.createElement("link");
++    css.rel = "stylesheet";
++    css.href = "/css/chatbot.css";
++    document.head.appendChild(css);
++  }
++
++  var API_URL = "/api/chat";
++  var STORAGE_KEY = "aefn-chat-history";
++  var SUGGESTIONS = ["¿Qué clubes hay?", "¿Cuáles son los próximos eventos?", "¿Qué profesores trabajan en nanotecnología?"];
++  var WELCOME = "¡Hola! Soy el asistente de la **AEFN**. Pregúntame sobre profesores, eventos, clubes, investigación o la asociación.";
++
++  var history = [];
++  try { history = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "[]"); } catch (e) { history = []; }
++
++  function save() { try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(-20))); } catch (e) {} }
++
++  function escapeHtml(s) {
++    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
++  }
++
++  // Markdown mínimo y seguro: negritas, cursivas, enlaces, listas, párrafos
++  function render(md) {
++    var html = escapeHtml(md)
++      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
++      .replace(/(^|[^*])\*(?!\s)(.+?)\*/g, "$1<em>$2</em>")
++      .replace(/\[([^\]]+)\]\(((?:https?:\/\/|\/)[^\s)]+)\)/g, '<a href="$2">$1</a>')
++      .replace(/(^|\s)(https?:\/\/[^\s<]+)/g, '$1<a href="$2" target="_blank" rel="noopener">$2</a>');
++    return html
++      .split(/\n{2,}/)
++      .map(function (block) {
++        var lines = block.split("\n");
++        if (lines.every(function (l) { return /^\s*[-•*]\s+/.test(l); })) {
++          return "<ul>" + lines.map(function (l) { return "<li>" + l.replace(/^\s*[-•*]\s+/, "") + "</li>"; }).join("") + "</ul>";
++        }
++        return "<p>" + lines.join("<br>") + "</p>";
++      })
++      .join("");
++  }
++
++  var ICON_CHAT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="5" ry="2.2" transform="rotate(35 12 12)"/></svg>';
++  var ICON_SEND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
++
++  var root = document.createElement("div");
++  root.className = "aefn-chat";
++  root.innerHTML =
++    '<button type="button" class="aefn-chat__launcher" aria-label="Abrir chat de ayuda">' + ICON_CHAT + "</button>" +
++    '<section class="aefn-chat__panel" role="dialog" aria-label="Chat de la AEFN">' +
++      '<header class="aefn-chat__header">' +
++        '<div class="aefn-chat__avatar" aria-hidden="true">AEFN</div>' +
++        '<div><p class="aefn-chat__title">Asistente AEFN</p><p class="aefn-chat__subtitle">Física y Nanotecnología · Yachay Tech</p></div>' +
++        '<button type="button" class="aefn-chat__close" aria-label="Cerrar chat">×</button>' +
++      "</header>" +
++      '<div class="aefn-chat__messages" aria-live="polite"></div>' +
++      '<form class="aefn-chat__form">' +
++        '<textarea class="aefn-chat__input" rows="1" placeholder="Escribe tu pregunta…" aria-label="Tu pregunta" maxlength="1000"></textarea>' +
++        '<button type="submit" class="aefn-chat__send" aria-label="Enviar">' + ICON_SEND + "</button>" +
++      "</form>" +
++      '<p class="aefn-chat__note">Respuestas generadas por IA. Verifica la información importante.</p>' +
++    "</section>";
++  document.body.appendChild(root);
++
++  var launcher = root.querySelector(".aefn-chat__launcher");
++  var closeBtn = root.querySelector(".aefn-chat__close");
++  var list = root.querySelector(".aefn-chat__messages");
++  var form = root.querySelector(".aefn-chat__form");
++  var input = root.querySelector(".aefn-chat__input");
++  var send = root.querySelector(".aefn-chat__send");
++  var busy = false;
++
++  function addMessage(role, text) {
++    var el = document.createElement("div");
++    el.className = "aefn-chat__msg aefn-chat__msg--" + (role === "user" ? "user" : "bot");
++    el.innerHTML = role === "user" ? "<p>" + escapeHtml(text).replace(/\n/g, "<br>") + "</p>" : render(text);
++    list.appendChild(el);
++    list.scrollTop = list.scrollHeight;
++    return el;
++  }
++
++  function showSuggestions() {
++    var wrap = document.createElement("div");
++    wrap.className = "aefn-chat__suggestions";
++    SUGGESTIONS.forEach(function (s) {
++      var b = document.createElement("button");
++      b.type = "button";
++      b.className = "aefn-chat__chip";
++      b.textContent = s;
++      b.addEventListener("click", function () { wrap.remove(); ask(s); });
++      wrap.appendChild(b);
++    });
++    list.appendChild(wrap);
++  }
++
++  function init() {
++    list.innerHTML = "";
++    addMessage("assistant", WELCOME);
++    if (!history.length) showSuggestions();
++    history.forEach(function (m) { addMessage(m.role, m.content); });
++  }
++
++  function ask(text) {
++    if (busy || !text.trim()) return;
++    busy = true;
++    send.disabled = true;
++    var chips = list.querySelector(".aefn-chat__suggestions");
++    if (chips) chips.remove();
++
++    addMessage("user", text);
++    var typing = addMessage("assistant", "");
++    typing.innerHTML = '<span class="aefn-chat__typing" aria-label="Escribiendo"><span></span><span></span><span></span></span>';
++
++    fetch(API_URL, {
++      method: "POST",
++      headers: { "Content-Type": "application/json" },
++      body: JSON.stringify({ message: text, history: history.slice(-6) }),
++    })
++      .then(function (r) { return r.json(); })
++      .then(function (data) {
++        var answer = data.answer || "No pude responder. Intenta de nuevo en un momento.";
++        typing.innerHTML = render(answer);
++        history.push({ role: "user", content: text }, { role: "assistant", content: answer });
++        save();
++      })
++      .catch(function () {
++        typing.innerHTML = render("No hay conexión con el asistente. Revisa tu internet e intenta de nuevo.");
++      })
++      .finally(function () {
++        busy = false;
++        send.disabled = false;
++        list.scrollTop = list.scrollHeight;
++        input.focus();
++      });
++  }
++
++  launcher.addEventListener("click", function () {
++    root.classList.add("is-open");
++    if (!list.children.length) init();
++    input.focus();
++  });
++  closeBtn.addEventListener("click", function () { root.classList.remove("is-open"); launcher.focus(); });
++  document.addEventListener("keydown", function (e) {
++    if (e.key === "Escape" && root.classList.contains("is-open")) { root.classList.remove("is-open"); launcher.focus(); }
++  });
++  form.addEventListener("submit", function (e) {
++    e.preventDefault();
++    var t = input.value;
++    input.value = "";
++    input.style.height = "";
++    ask(t);
++  });
++  input.addEventListener("keydown", function (e) {
++    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event("submit")); }
++  });
++  input.addEventListener("input", function () {
++    input.style.height = "auto";
++    input.style.height = Math.min(input.scrollHeight, 100) + "px";
++  });
++})();
+diff --git a/public/nosotros.html b/public/nosotros.html
+index e3252d6..06ef357 100644
+--- a/public/nosotros.html
++++ b/public/nosotros.html
+@@ -20,7 +20,8 @@
+         <link href="css/aefn-components.css" rel="stylesheet">
+         <link href="css/aefn-overrides.css" rel="stylesheet">
+         <link href="css/aefn-color-override.css" rel="stylesheet">
+-    </head>
++        <link rel="stylesheet" href="css/chatbot.css">
++</head>
+     
+     <body>
+         <main>
+@@ -285,5 +286,6 @@
+         <script src="js/jquery.sticky.js"></script>
+         <script src="js/click-scroll.js"></script>
+         <script src="js/custom.js"></script>
+-    </body>
++        <script src="js/chatbot.js" defer></script>
++</body>
+ </html>
+\ No newline at end of file
+diff --git a/public/profesores.html b/public/profesores.html
+index 53e555f..e54b91f 100644
+--- a/public/profesores.html
++++ b/public/profesores.html
+@@ -45,7 +45,8 @@
+                 color: var(--primary-color);
+             }
+         </style>
+-    </head>
++        <link rel="stylesheet" href="css/chatbot.css">
++</head>
+     
+     <body>
+         <main>
+@@ -246,5 +247,6 @@
+                 PermissionsManager.injectAddButton('profesores', '✚ Agregar Profesor', 'addProfessorContainer');
+             });
+         </script>
+-    </body>
++        <script src="js/chatbot.js" defer></script>
++</body>
+ </html>
+\ No newline at end of file
+diff --git a/scripts/build-knowledge.mjs b/scripts/build-knowledge.mjs
+new file mode 100644
+index 0000000..9d3d848
+--- /dev/null
++++ b/scripts/build-knowledge.mjs
+@@ -0,0 +1,162 @@
++/**
++ * Construye la "base de conocimiento" del chatbot
++ * ===========================================
++ * Lee:
++ *   1. Todos los archivos de la carpeta /conocimiento (.md, .txt, .pdf, .docx, .json)
++ *   2. Los datos del sitio en /public/data/*.json (profesores, noticias, eventos...)
++ *
++ * Los parte en fragmentos pequeños y los guarda en src/data/knowledge.json.
++ * El endpoint /api/chat busca en esos fragmentos los más relevantes para
++ * cada pregunta y se los pasa al modelo de IA como contexto.
++ *
++ * Se ejecuta solo antes de cada build (ver "build" en package.json).
++ * Manualmente:  node scripts/build-knowledge.mjs
++ */
++import fs from "node:fs/promises";
++import path from "node:path";
++
++const ROOT = process.cwd();
++const DOCS_DIR = path.join(ROOT, "conocimiento");
++const SITE_DATA_DIR = path.join(ROOT, "public", "data");
++const OUT_FILE = path.join(ROOT, "src", "data", "knowledge.json");
++
++const CHUNK_SIZE = 900; // caracteres por fragmento
++const CHUNK_OVERLAP = 150;
++
++// Campos de los JSON del sitio que no aportan nada al chatbot
++const SKIP_KEYS = new Set(["id", "foto", "image", "imagen", "photos", "icono", "slug", "published", "orden"]);
++
++const SITE_LABELS = {
++  "profesores.json": "Profesores",
++  "noticias.json": "Noticias",
++  "events.json": "Eventos",
++  "clubes.json": "Clubes estudiantiles",
++  "investigation-groups.json": "Grupos de investigación",
++  "papers.json": "Publicaciones (papers)",
++  "theses.json": "Tesis",
++  "gallery.json": "Galería",
++};
++
++function clean(text) {
++  return text.replace(/\r/g, "").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
++}
++
++function chunk(text) {
++  const paragraphs = clean(text).split(/\n\s*\n/);
++  const chunks = [];
++  let current = "";
++  for (const p of paragraphs) {
++    if ((current + "\n\n" + p).length > CHUNK_SIZE && current) {
++      chunks.push(current.trim());
++      current = current.slice(-CHUNK_OVERLAP) + "\n\n" + p;
++    } else {
++      current = current ? current + "\n\n" + p : p;
++    }
++    // Párrafos gigantes: se cortan a la fuerza
++    while (current.length > CHUNK_SIZE * 1.5) {
++      chunks.push(current.slice(0, CHUNK_SIZE).trim());
++      current = current.slice(CHUNK_SIZE - CHUNK_OVERLAP);
++    }
++  }
++  if (current.trim()) chunks.push(current.trim());
++  return chunks;
++}
++
++function objectToText(obj, indent = "") {
++  if (obj == null) return "";
++  if (typeof obj !== "object") return String(obj);
++  if (Array.isArray(obj)) {
++    if (obj.every((v) => typeof v !== "object")) return obj.join(", ");
++    return obj.map((v) => objectToText(v, indent + "  ")).join("\n");
++  }
++  return Object.entries(obj)
++    .filter(([k, v]) => !SKIP_KEYS.has(k) && v !== "" && v != null && !(Array.isArray(v) && v.length === 0))
++    .map(([k, v]) => {
++      const val = typeof v === "object" && !Array.isArray(v) ? "\n" + objectToText(v, indent + "  ") : objectToText(v, indent + "  ");
++      return `${indent}${k.replace(/_/g, " ")}: ${val}`;
++    })
++    .join("\n");
++}
++
++async function readPdf(file) {
++  const { extractText, getDocumentProxy } = await import("unpdf");
++  const buf = new Uint8Array(await fs.readFile(file));
++  const pdf = await getDocumentProxy(buf);
++  const { text } = await extractText(pdf, { mergePages: false });
++  return Array.isArray(text) ? text.join("\n\n") : text;
++}
++
++async function readDocx(file) {
++  const mammoth = (await import("mammoth")).default;
++  const { value } = await mammoth.extractRawText({ path: file });
++  return value;
++}
++
++async function walk(dir) {
++  let out = [];
++  let entries = [];
++  try {
++    entries = await fs.readdir(dir, { withFileTypes: true });
++  } catch {
++    return out;
++  }
++  for (const e of entries) {
++    const full = path.join(dir, e.name);
++    if (e.isDirectory()) out = out.concat(await walk(full));
++    else out.push(full);
++  }
++  return out;
++}
++
++async function main() {
++  const docs = [];
++
++  // 1. Documentos propios
++  const files = await walk(DOCS_DIR);
++  for (const file of files) {
++    const rel = path.relative(DOCS_DIR, file);
++    const ext = path.extname(file).toLowerCase();
++    if (path.basename(file).toLowerCase() === "readme.md") continue;
++    try {
++      let text = "";
++      if (ext === ".md" || ext === ".txt") text = await fs.readFile(file, "utf8");
++      else if (ext === ".pdf") text = await readPdf(file);
++      else if (ext === ".docx") text = await readDocx(file);
++      else if (ext === ".json") text = objectToText(JSON.parse(await fs.readFile(file, "utf8")));
++      else {
++        console.warn(`  (omitido, formato no soportado) ${rel}`);
++        continue;
++      }
++      const parts = chunk(text);
++      parts.forEach((t) => docs.push({ source: rel, text: t }));
++      console.log(`  ✓ ${rel} → ${parts.length} fragmentos`);
++    } catch (err) {
++      console.warn(`  ✗ No se pudo leer ${rel}: ${err.message}`);
++    }
++  }
++
++  // 2. Datos del sitio (se actualizan solos cuando se edita desde /admin)
++  for (const [fileName, label] of Object.entries(SITE_LABELS)) {
++    try {
++      const data = JSON.parse(await fs.readFile(path.join(SITE_DATA_DIR, fileName), "utf8"));
++      const items = Array.isArray(data) ? data : [data];
++      for (const item of items) {
++        const text = objectToText(item);
++        if (!text.trim()) continue;
++        chunk(text).forEach((t) => docs.push({ source: `Sitio web · ${label}`, text: t }));
++      }
++      console.log(`  ✓ ${fileName} → ${items.length} elementos`);
++    } catch {
++      /* archivo no existe: se ignora */
++    }
++  }
++
++  await fs.mkdir(path.dirname(OUT_FILE), { recursive: true });
++  await fs.writeFile(OUT_FILE, JSON.stringify({ generatedAt: new Date().toISOString(), docs }));
++  console.log(`\nBase de conocimiento lista: ${docs.length} fragmentos → ${path.relative(ROOT, OUT_FILE)}`);
++}
++
++main().catch((err) => {
++  console.error(err);
++  process.exit(1);
++});
+diff --git a/src/app/api/chat/route.ts b/src/app/api/chat/route.ts
+new file mode 100644
+index 0000000..b944a90
+--- /dev/null
++++ b/src/app/api/chat/route.ts
+@@ -0,0 +1,137 @@
++/**
++ * POST /api/chat — Chatbot de la AEFN
++ * ===========================================
++ * 1. Recibe la pregunta y el historial corto de la conversación.
++ * 2. Busca los fragmentos más relevantes en la base de conocimiento.
++ * 3. Le pide la respuesta a un modelo gratuito:
++ *      - Google Gemini (GEMINI_API_KEY)  ← principal
++ *      - Groq (GROQ_API_KEY)             ← respaldo opcional
++ * 4. Si no hay clave o se acabó la cuota gratis, responde mostrando
++ *    directamente los fragmentos encontrados (el chat nunca se "cae").
++ *
++ * Las claves van en variables de entorno de Vercel, NUNCA en el código.
++ */
++import { NextRequest, NextResponse } from "next/server";
++import { search, type Doc } from "@/lib/chat-search";
++
++export const runtime = "nodejs";
++
++type Msg = { role: "user" | "assistant"; content: string };
++
++const BOT_NAME = process.env.CHATBOT_NAME || "Asistente AEFN";
++
++const SYSTEM_PROMPT = `Eres ${BOT_NAME}, el asistente virtual de la Asociación de Estudiantes de Física y Nanotecnología (AEFN) de la Universidad Yachay Tech, en Ecuador.
++
++Reglas:
++- Responde SIEMPRE en el idioma en que te escriben (normalmente español), de forma breve, clara y amable.
++- Usa SOLO la información de la sección CONTEXTO. Si la respuesta no está ahí, dilo con honestidad y sugiere escribir a la AEFN por la página de contacto (/contact.html). No inventes nombres, fechas, correos ni cifras.
++- Puedes usar **negritas** y listas cortas con "- ". No uses títulos ni tablas.
++- Si mencionas una página del sitio, usa estos enlaces: profesores → /profesores.html, eventos → /calendario.html, clubes → /clubes.html, investigación → /investigacion.html, galería → /galeria.html, noticias → /noticias, contacto → /contact.html.`;
++
++// ---------- Límite de uso por IP (protege tu cuota gratis) ----------
++const WINDOW_MS = 10 * 60 * 1000;
++const MAX_REQ = Number(process.env.CHATBOT_MAX_REQUESTS || 25);
++const hits = new Map<string, number[]>();
++function rateLimited(ip: string) {
++  const now = Date.now();
++  const list = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
++  list.push(now);
++  hits.set(ip, list);
++  if (hits.size > 5000) hits.clear();
++  return list.length > MAX_REQ;
++}
++
++function buildContext(found: Doc[]) {
++  if (!found.length) return "(No se encontró información relacionada.)";
++  return found.map((d, i) => `[${i + 1}] Fuente: ${d.source}\n${d.text}`).join("\n\n---\n\n");
++}
++
++async function askGemini(history: Msg[], question: string, context: string) {
++  const key = process.env.GEMINI_API_KEY;
++  if (!key) return null;
++  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
++  const contents = [
++    ...history.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })),
++    { role: "user", parts: [{ text: `CONTEXTO:\n${context}\n\nPREGUNTA: ${question}` }] },
++  ];
++  const generationConfig: Record<string, unknown> = { temperature: 0.3, maxOutputTokens: 700 };
++  if (model.startsWith("gemini-2.5-flash")) generationConfig.thinkingConfig = { thinkingBudget: 0 };
++
++  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
++    method: "POST",
++    headers: { "Content-Type": "application/json", "x-goog-api-key": key },
++    body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }, contents, generationConfig }),
++  });
++  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
++  const data = await res.json();
++  const text = data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("").trim();
++  return text || null;
++}
++
++async function askGroq(history: Msg[], question: string, context: string) {
++  const key = process.env.GROQ_API_KEY;
++  if (!key) return null;
++  const model = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
++  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
++    method: "POST",
++    headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
++    body: JSON.stringify({
++      model,
++      temperature: 0.3,
++      max_tokens: 700,
++      messages: [
++        { role: "system", content: SYSTEM_PROMPT },
++        ...history,
++        { role: "user", content: `CONTEXTO:\n${context}\n\nPREGUNTA: ${question}` },
++      ],
++    }),
++  });
++  if (!res.ok) throw new Error(`Groq ${res.status}: ${(await res.text()).slice(0, 300)}`);
++  const data = await res.json();
++  return data?.choices?.[0]?.message?.content?.trim() || null;
++}
++
++function fallbackAnswer(found: Doc[]) {
++  if (!found.length) {
++    return "No encontré información sobre eso. Puedes escribirle a la AEFN desde la página de [contacto](/contact.html).";
++  }
++  const top = found.slice(0, 2).map((d) => `**${d.source}**\n${d.text.slice(0, 400)}${d.text.length > 400 ? "…" : ""}`);
++  return `Esto es lo más relacionado que encontré:\n\n${top.join("\n\n")}`;
++}
++
++export async function POST(req: NextRequest) {
++  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
++  if (rateLimited(ip)) {
++    return NextResponse.json({ answer: "Has enviado muchas preguntas seguidas. Espera unos minutos e intenta de nuevo." }, { status: 429 });
++  }
++
++  let body: { message?: string; history?: Msg[] };
++  try {
++    body = await req.json();
++  } catch {
++    return NextResponse.json({ error: "Petición inválida" }, { status: 400 });
++  }
++
++  const question = String(body.message ?? "").trim().slice(0, 1000);
++  if (!question) return NextResponse.json({ error: "Mensaje vacío" }, { status: 400 });
++
++  const history: Msg[] = (Array.isArray(body.history) ? body.history : [])
++    .filter((m) => (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
++    .slice(-6)
++    .map((m) => ({ role: m.role, content: m.content.slice(0, 1500) }));
++
++  // Se incluye la última pregunta del usuario para entender seguimientos ("¿y su correo?")
++  const lastUser = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
++  const found = search(`${question} ${lastUser}`, 6);
++  const context = buildContext(found);
++
++  for (const ask of [askGemini, askGroq]) {
++    try {
++      const answer = await ask(history, question, context);
++      if (answer) return NextResponse.json({ answer });
++    } catch (err) {
++      console.error("[chat]", err instanceof Error ? err.message : err);
++    }
++  }
++  return NextResponse.json({ answer: fallbackAnswer(found), fallback: true });
++}
+diff --git a/src/app/layout.tsx b/src/app/layout.tsx
+index cdd0351..7315dc3 100644
+--- a/src/app/layout.tsx
++++ b/src/app/layout.tsx
+@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
+ import "./globals.css";
+ import { Toaster } from "@/components/ui/toaster";
+ import { Toaster as SonnerToaster } from "@/components/ui/sonner";
++import { ChatbotLoader } from "@/components/chatbot-loader";
+ 
+ const geistSans = Geist({
+   variable: "--font-geist-sans",
+@@ -48,6 +49,7 @@ export default function RootLayout({
+         {children}
+         <Toaster />
+         <SonnerToaster position="top-right" richColors closeButton />
++        <ChatbotLoader />
+       </body>
+     </html>
+   );
+diff --git a/src/components/chatbot-loader.tsx b/src/components/chatbot-loader.tsx
+new file mode 100644
+index 0000000..ade2f45
+--- /dev/null
++++ b/src/components/chatbot-loader.tsx
+@@ -0,0 +1,11 @@
++"use client";
++
++import Script from "next/script";
++import { usePathname } from "next/navigation";
++
++/** Carga el chatbot en las páginas React públicas (no en /admin). */
++export function ChatbotLoader() {
++  const pathname = usePathname();
++  if (pathname?.startsWith("/admin")) return null;
++  return <Script src="/js/chatbot.js" strategy="lazyOnload" />;
++}
+diff --git a/src/lib/chat-search.ts b/src/lib/chat-search.ts
+new file mode 100644
+index 0000000..b9d1730
+--- /dev/null
++++ b/src/lib/chat-search.ts
+@@ -0,0 +1,62 @@
++/**
++ * Búsqueda de fragmentos relevantes (BM25)
++ * ===========================================
++ * No usa servicios externos ni "embeddings": es 100% gratis y corre en el
++ * servidor. Para una base de conocimiento de hasta unos miles de fragmentos
++ * funciona muy bien.
++ */
++import knowledge from "@/data/knowledge.json";
++
++export type Doc = { source: string; text: string };
++
++const STOPWORDS = new Set(
++  (
++    "a al algo algun alguna algunas alguno algunos ante antes como con contra cual cuales cuando de del desde donde dos el ella ellas ellos en entre era eran es esa esas ese eso esos esta estan estas este esto estos fue fueron ha hay la las le les lo los mas me mi mis mucho muy nada ni no nos o otra otro para pero poco por porque que quien quienes se ser si sin sobre son su sus tambien te tiene tienen todo todos tu tus un una uno unos y ya yo " +
++    "the of and to in is for on with what who how are an be"
++  ).split(" ")
++);
++
++export function tokenize(text: string): string[] {
++  return text
++    .toLowerCase()
++    .normalize("NFD")
++    .replace(/[\u0300-\u036f]/g, "")
++    .replace(/[^a-z0-9ñ\s]/g, " ")
++    .split(/\s+/)
++    .filter((t) => t.length > 1 && !STOPWORDS.has(t))
++    .map((t) => (t.length > 4 ? t.replace(/(es|s)$/, "") : t)); // plural → singular (aprox.)
++}
++
++const docs: Doc[] = (knowledge as { docs: Doc[] }).docs ?? [];
++const docTokens = docs.map((d) => tokenize(d.source + " " + d.text));
++const avgLen = docTokens.reduce((s, t) => s + t.length, 0) / Math.max(docTokens.length, 1);
++const df = new Map<string, number>();
++for (const toks of docTokens) for (const t of new Set(toks)) df.set(t, (df.get(t) ?? 0) + 1);
++
++export function search(query: string, k = 6): Doc[] {
++  const q = [...new Set(tokenize(query))];
++  if (!q.length || !docs.length) return [];
++  const N = docs.length;
++  const k1 = 1.4;
++  const b = 0.75;
++  const scored = docTokens.map((toks, i) => {
++    let score = 0;
++    for (const term of q) {
++      const n = df.get(term);
++      if (!n) continue;
++      let tf = 0;
++      for (const t of toks) if (t === term) tf++;
++      if (!tf) continue;
++      const idf = Math.log(1 + (N - n + 0.5) / (n + 0.5));
++      score += idf * ((tf * (k1 + 1)) / (tf + k1 * (1 - b + (b * toks.length) / avgLen)));
++    }
++    return { i, score };
++  });
++  return scored
++    .filter((s) => s.score > 0)
++    .sort((a, b) => b.score - a.score)
++    .slice(0, k)
++    .map((s) => docs[s.i]);
++}
++
++export const knowledgeSize = docs.length;
+-- 
+2.43.0
+

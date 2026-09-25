@@ -12,7 +12,7 @@
  * Las claves van en variables de entorno de Vercel, NUNCA en el código.
  */
 import { NextRequest, NextResponse } from "next/server";
-import { search, type Doc } from "@/lib/chat-search";
+import { searchKnowledge, type KnowledgeChunk } from "@/lib/chat-search";
 
 export const runtime = "nodejs";
 

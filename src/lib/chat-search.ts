@@ -1,62 +1,116 @@
+import { readFileSync } from "fs";
+import { join } from "path";
+
 /**
- * Búsqueda de fragmentos relevantes (BM25)
+ * Buscador de fragmentos (RAG retrieval)
  * ===========================================
- * No usa servicios externos ni "embeddings": es 100% gratis y corre en el
- * servidor. Para una base de conocimiento de hasta unos miles de fragmentos
- * funciona muy bien.
+ * Carga el índice de conocimiento (generado por scripts/build-knowledge.mjs)
+ * y busca los fragmentos más relevantes para una pregunta dada.
+ *
+ * Usa una técnica simple pero efectiva: TF (Term Frequency) con
+ * normalización. No requiere embeddings ni APIs externas.
  */
-import knowledge from "@/data/knowledge.json";
 
-export type Doc = { source: string; text: string };
+interface KnowledgeChunk {
+  id: string;
+  text: string;
+  source: string;
+  section: string;
+}
 
-const STOPWORDS = new Set(
-  (
-    "a al algo algun alguna algunas alguno algunos ante antes como con contra cual cuales cuando de del desde donde dos el ella ellas ellos en entre era eran es esa esas ese eso esos esta estan estas este esto estos fue fueron ha hay la las le les lo los mas me mi mis mucho muy nada ni no nos o otra otro para pero poco por porque que quien quienes se ser si sin sobre son su sus tambien te tiene tienen todo todos tu tus un una uno unos y ya yo " +
-    "the of and to in is for on with what who how are an be"
-  ).split(" ")
-);
+let cachedIndex: KnowledgeChunk[] | null = null;
 
-export function tokenize(text: string): string[] {
+/** Stopwords en español (palabras muy comunes que no aportan a la búsqueda) */
+const STOPWORDS = new Set([
+  "el", "la", "los", "las", "un", "una", "unos", "unas", "de", "del", "a", "al",
+  "y", "o", "que", "en", "es", "se", "por", "para", "con", "como", "su", "sus",
+  "mas", "pero", "si", "no", "ya", "esto", "eso", "esta", "ese", "aquel",
+  "mi", "tu", "yo", "me", "te", "le", "les", "nos", "vos", "ellos", "ellas",
+  "fue", "son", "ser", "estar", "tener", "hacer", "poder", "decir", "ver",
+  "the", "is", "are", "was", "were", "a", "an", "the", "and", "or", "in",
+  "on", "at", "to", "for", "of", "with", "by", "from", "as", "it",
+]);
+
+/** Tokeniza un texto en palabras (minúsculas, sin acentos, sin signos) */
+function tokenize(text: string): string[] {
   return text
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9ñ\s]/g, " ")
+    .replace(/[\u0300-\u036f]/g, "") // Quitar acentos
+    .replace(/[^a-z0-9\s]/g, " ")
     .split(/\s+/)
-    .filter((t) => t.length > 1 && !STOPWORDS.has(t))
-    .map((t) => (t.length > 4 ? t.replace(/(es|s)$/, "") : t)); // plural → singular (aprox.)
+    .filter((w) => w.length > 2 && !STOPWORDS.has(w));
 }
 
-const docs: Doc[] = (knowledge as { docs: Doc[] }).docs ?? [];
-const docTokens = docs.map((d) => tokenize(d.source + " " + d.text));
-const avgLen = docTokens.reduce((s, t) => s + t.length, 0) / Math.max(docTokens.length, 1);
-const df = new Map<string, number>();
-for (const toks of docTokens) for (const t of new Set(toks)) df.set(t, (df.get(t) ?? 0) + 1);
+/** Carga el índice de conocimiento (con caché) */
+function loadIndex(): KnowledgeChunk[] {
+  if (cachedIndex) return cachedIndex;
 
-export function search(query: string, k = 6): Doc[] {
-  const q = [...new Set(tokenize(query))];
-  if (!q.length || !docs.length) return [];
-  const N = docs.length;
-  const k1 = 1.4;
-  const b = 0.75;
-  const scored = docTokens.map((toks, i) => {
+  try {
+    const indexPath = join(process.cwd(), "public", "data", "knowledge-index.json");
+    const raw = readFileSync(indexPath, "utf-8");
+    cachedIndex = JSON.parse(raw);
+    return cachedIndex || [];
+  } catch (e) {
+    console.warn("[chat-search] knowledge-index.json no encontrado:", e instanceof Error ? e.message : "");
+    return [];
+  }
+}
+
+/**
+ * Busca los fragmentos más relevantes para una pregunta.
+ * @param question La pregunta del usuario
+ * @param maxResults Número máximo de fragmentos a devolver (default 5)
+ * @returns Array de fragmentos con score
+ */
+export function searchKnowledge(
+  question: string,
+  maxResults: number = 5
+): { chunk: KnowledgeChunk; score: number }[] {
+  const index = loadIndex();
+  if (index.length === 0) return [];
+
+  const questionTokens = tokenize(question);
+  if (questionTokens.length === 0) return [];
+
+  const scored = index.map((chunk) => {
+    const chunkTokens = tokenize(chunk.text);
+    const chunkSet = new Set(chunkTokens);
+
+    // Score: cuántos tokens de la pregunta aparecen en el chunk
     let score = 0;
-    for (const term of q) {
-      const n = df.get(term);
-      if (!n) continue;
-      let tf = 0;
-      for (const t of toks) if (t === term) tf++;
-      if (!tf) continue;
-      const idf = Math.log(1 + (N - n + 0.5) / (n + 0.5));
-      score += idf * ((tf * (k1 + 1)) / (tf + k1 * (1 - b + (b * toks.length) / avgLen)));
+    for (const qt of questionTokens) {
+      if (chunkSet.has(qt)) {
+        score += 1;
+        // Bonus si el token aparece en el título/sección
+        if (chunk.section.toLowerCase().includes(qt)) {
+          score += 0.5;
+        }
+      }
     }
-    return { i, score };
+
+    // Normalizar por longitud del chunk (penalizar chunks muy cortos)
+    score = score / Math.sqrt(chunkTokens.length || 1);
+
+    return { chunk, score };
   });
+
   return scored
     .filter((s) => s.score > 0)
     .sort((a, b) => b.score - a.score)
-    .slice(0, k)
-    .map((s) => docs[s.i]);
+    .slice(0, maxResults)
+    .map((s) => ({ chunk: s.chunk, score: s.score }));
 }
 
-export const knowledgeSize = docs.length;
+/**
+ * Construye el contexto para el LLM a partir de los fragmentos encontrados.
+ */
+export function buildContext(results: { chunk: KnowledgeChunk; score: number }[]): string {
+  if (results.length === 0) return "";
+
+  return results
+    .map((r, i) => {
+      return `[Fragmento ${i + 1}] (Fuente: ${r.chunk.source} — ${r.chunk.section})\n${r.chunk.text}`;
+    })
+    .join("\n\n---\n\n");
+}

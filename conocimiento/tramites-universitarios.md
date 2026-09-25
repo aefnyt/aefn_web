@@ -25,6 +25,35 @@ Similar al certificado de matrícula pero más detallado. Incluye materias cursa
 ### Cambio de carrera
 Se solicita ante el decano de la escuela correspondiente. Requiere carta de motivación y entrevista. El proceso toma aproximadamente 2 semanas.
 
+## Régimen especial (retiros, suspensiones, reingresos)
+
+### Retiro temporal
+El retiro temporal permite a un estudiante suspender sus estudios por uno o dos semestres sin perder su calidad de estudiante regular. Se solicita en la oficina de Registro Académico mediante el instructivo de Régimen Especial. El estudiante debe presentar una solicitud formal dirigida al Decano de la escuela, explicando los motivos del retiro temporal. El plazo máximo de retiro temporal es de dos semestres consecutivos. Para reingresar, el estudiante debe solicitar su reincorporación antes del inicio del semestre en que desea volver.
+
+### Reingreso después de retiro temporal
+Para reingresar después de un retiro temporal, el estudiante debe presentar una solicitud de reincorporación en la oficina de Registro Académico al menos 30 días antes del inicio del semestre. Debe estar al día con sus obligaciones financieras. El reingreso está sujeto a disponibilidad de cupos.
+
+### Deserción estudiantil
+Se considera deserción cuando un estudiante se retira sin completar el trámite formal de retiro temporal. En estos casos, el estudiante pierde su calidad de regular. Para reingresar después de deserción, debe solicitar readmisión, que incluye evaluación del expediente académico y posible repetición de materias.
+
+### Suspensión de matrícula
+La suspensión de matrícula puede ser voluntaria (el estudiante decide no matricularse un semestre) o involuntaria (por bajo rendimiento académico o medidas disciplinarias). En caso de suspensión por bajo rendimiento, el estudiante debe seguir un plan de nivelación académica.
+
+### Baja académica
+La baja académica es la pérdida definitiva de la calidad de estudiante. Puede ocurrir por: expulsión disciplinaria, bajo rendimiento sostenido (promedio inferior al mínimo por dos semestres consecutivos), o deserción prolongada (más de cuatro semestres sin matricularse).
+
+### Permiso de ausencia temporal
+Diferente al retiro temporal, el permiso de ausencia es para ausencias cortas (menos de un semestre) por motivos de salud, embarazo, representación deportiva o académica, o fuerza mayor. Se solicita en Registro con la documentación de respaldo correspondiente.
+
+### Convalidación de materias
+Si un estudiante cambia de carrera o viene de otra universidad, puede solicitar convalidación (reconocimiento) de materias ya aprobadas. Debe presentar el syllabus de cada materia ante el coordinador de la carrera. La convalidación la aprueba el Decano de la escuela correspondiente.
+
+### Repitencia de materias
+Un estudiante que reprueba una materia debe repetirla. Si reprueba la misma materia dos veces, puede ser sometido a revisión académica. La tercera reprobación de la misma materia puede llevar a la pérdida de la calidad de estudiante regular.
+
+### Revisión de notas
+El estudiante puede solicitar revisión de una calificación final dentro de los 5 días hábiles posteriores a la publicación de notas. La solicitud se hace por escrito ante el profesor. Si no está conforme con la revisión, puede escalar la solicitud al Decano de la escuela.
+
 ## Servicios estudiantiles
 
 ### Biblioteca

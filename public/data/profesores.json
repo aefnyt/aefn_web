@@ -12,7 +12,7 @@
       "Computational fluid mechanics",
       "Galactic winds and the Galactic centre"
     ],
-    "foto": "",
+    "foto": "images/profesores/wladimir-banda.webp",
     "email": "wbanda@yachaytech.edu.ec",
     "telefono": "",
     "oficina": "Edificio Senescyt, ECFN",
@@ -33,7 +33,8 @@
       "linkedin": "https://ec.linkedin.com/in/wladimir-banda-barragan",
       "google_scholar": "https://scholar.google.com/citations?user=4HarUuQAAAAJ&hl=en",
       "github": "https://github.com/wbandabarragan"
-    }
+    },
+    "id": "wladimir-banda"
   },
   {
     "nombre": "Eduardo Estévez, Ph.D",
@@ -45,7 +46,7 @@
       "Magnetohydrodynamics",
       "Astrophysical gas dynamics"
     ],
-    "foto": "",
+    "foto": "images/profesores/eduardo-estevez.jpg",
     "email": "wbanda@yachaytech.edu.ec",
     "telefono": "",
     "oficina": "Edificio Senescyt, ECFN",
@@ -64,7 +65,8 @@
       "linkedin": "https://ec.linkedin.com/in/eduardo-estevez-7b565a95",
       "google_scholar": "https://scholar.google.com/citations?user=-MR8r9cAAAAJ&hl=en",
       "github": ""
-    }
+    },
+    "id": "eduardo-estevez"
   },
   {
     "nombre": "Duncan Mowbray, Ph.D",
@@ -76,7 +78,7 @@
       "Theory development, modeling,  and simulation of nanomaterials",
       "Nanoelectronics"
     ],
-    "foto": "",
+    "foto": "images/profesores/duncan-mowbray.jpg",
     "email": "dmowbray@yachaytech.edu.ec",
     "telefono": "",
     "oficina": "Edificio Senescyt, ECFN",
@@ -97,7 +99,8 @@
       "linkedin": "https://ec.linkedin.com/in/duncan-mowbray-95345424",
       "google_scholar": "https://scholar.google.com/citations?user=H8utUhwAAAAJ&hl=en",
       "github": ""
-    }
+    },
+    "id": "duncan-mowbray"
   },
   {
     "nombre": "Henry P.Pinto, Ph.D",
@@ -110,7 +113,7 @@
       "Computational studies of flower-like defects in graphene",
       "Física del Estado Sólido"
     ],
-    "foto": "",
+    "foto": "images/profesores/henry-p-pinto.jpg",
     "email": "hpinto@yachaytech.edu.ec",
     "telefono": "",
     "oficina": "Edificio Senescyt, ECFN",
@@ -131,7 +134,8 @@
       "linkedin": "https://ec.linkedin.com/in/duncan-mowbray-95345424",
       "google_scholar": "https://scholar.google.com/citations?user=H8utUhwAAAAJ&hl=en",
       "github": ""
-    }
+    },
+    "id": "henry-p-pinto"
   },
   {
     "nombre": "Gema ",

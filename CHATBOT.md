@@ -35,7 +35,12 @@ Sube archivos `.pdf`, `.docx`, `.md` o `.txt` a la carpeta **`conocimiento/`** d
 | `GEMINI_MODEL` | Cambiar de modelo si Google retira el actual | `gemini-2.5-flash` |
 | `GROQ_API_KEY` | Respaldo gratis si se acaba la cuota de Gemini (https://console.groq.com/keys) | — |
 | `GROQ_MODEL` | Modelo de Groq | `llama-3.3-70b-versatile` |
+| `CHATBOT_MAX_OUTPUT_TOKENS` | Longitud máxima de la respuesta en Gemini | `4000` |
+| `GROQ_MAX_TOKENS` | Longitud máxima de la respuesta en Groq | `2000` |
 | `CHATBOT_MAX_REQUESTS` | Máximo de preguntas por visitante cada 10 min | `25` |
+
+> Recuerda: tras **agregar o cambiar** una variable en Vercel hay que **redesplegar**
+> (Deployments → ⋯ → Redeploy, o un commit cualquiera) para que surta efecto.
 
 ## Límites del plan gratis
 

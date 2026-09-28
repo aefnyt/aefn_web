@@ -62,7 +62,8 @@ async function askGemini(history: Msg[], question: string, context: string) {
     ...history.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })),
     { role: "user", parts: [{ text: `CONTEXTO:\n${context}\n\nPREGUNTA: ${question}` }] },
   ];
-  const generationConfig: Record<string, unknown> = { temperature: 0.3, maxOutputTokens: 4000 };
+  const maxOut = Math.max(500, Number(process.env.CHATBOT_MAX_OUTPUT_TOKENS || 4000));
+  const generationConfig: Record<string, unknown> = { temperature: 0.3, maxOutputTokens: maxOut };
   if (model.startsWith("gemini-2.5-flash")) generationConfig.thinkingConfig = { thinkingBudget: 0 };
 
   const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
@@ -86,7 +87,7 @@ async function askGroq(history: Msg[], question: string, context: string) {
     body: JSON.stringify({
       model,
       temperature: 0.3,
-      max_tokens: 700,
+      max_tokens: Math.max(500, Number(process.env.GROQ_MAX_TOKENS || 2000)),
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         ...history,

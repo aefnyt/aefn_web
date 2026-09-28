@@ -98,7 +98,7 @@ El proyecto es un **sitio web full-stack** que permite a la AEFN gestionar su pr
                              │
                              ▼ GitHub Contents API
 ┌─────────────────────────────────────────────────────────────────┐
-│  REPOSITORIO GITHUB (aefnyt/web_aefn)                          │
+│  REPOSITORIO GITHUB (aefnyt/aefn_web)                          │
 │                                                                 │
 │  /data/*.json        ← cada edición genera 1 commit            │
 │  /images/profesores/ ← fotos optimizadas (WebP 600px)           │
@@ -114,7 +114,7 @@ El proyecto es un **sitio web full-stack** que permite a la AEFN gestionar su pr
 ## 4. Estructura de Carpetas
 
 ```
-web_aefn/
+aefn_web/
 ├── public/                          # Archivos estáticos servidos directamente
 │   ├── index.html                   # Página principal (HTML original)
 │   ├── profesores.html, clubes.html, ...  # Páginas HTML originales
@@ -311,7 +311,7 @@ Cada PUT/DELETE genera automáticamente un commit en GitHub.
 ### Token (PAT Fine-grained)
 
 - **Tipo:** Fine-grained (más seguro que Classic)
-- **Permisos:** Solo `Contents: Read and write` sobre el repo `aefnyt/web_aefn`
+- **Permisos:** Solo `Contents: Read and write` sobre el repo `aefnyt/aefn_web`
 - **Expiración:** 90 días (recomendado)
 - **Almacenamiento:** Variable de entorno `GITHUB_TOKEN` (nunca en código)
 

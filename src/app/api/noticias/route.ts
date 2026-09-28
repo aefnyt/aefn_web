@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: noticias, sha } = await readJsonForWrite<Noticia[]>(JSON_PATH, "id");
+    const { data: noticias, sha } = await readJsonForWrite<Noticia>(JSON_PATH, "id");
     const lista = noticias ?? [];
 
     // SAFEGUARD: Si la lectura falló, NO sobrescribir
@@ -173,7 +173,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const { data: noticias, sha } = await readJsonForWrite<Noticia[]>(JSON_PATH, "id");
+    const { data: noticias, sha } = await readJsonForWrite<Noticia>(JSON_PATH, "id");
     const lista = noticias ?? [];
 
     // SAFEGUARD: Si la lectura falló, NO sobrescribir
@@ -261,7 +261,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Falta el campo: id." }, { status: 400 });
     }
 
-    const { data: noticias, sha } = await readJsonForWrite<Noticia[]>(JSON_PATH, "id");
+    const { data: noticias, sha } = await readJsonForWrite<Noticia>(JSON_PATH, "id");
     const lista = noticias ?? [];
 
     // SAFEGUARD: Si la lectura falló, NO sobrescribir

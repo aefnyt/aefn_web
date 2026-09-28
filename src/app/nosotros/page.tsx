@@ -13,6 +13,21 @@ interface DepartamentoMember {
   foto: string;
 }
 
+/** Muestra la foto del miembro; si falla (404, ruta relativa vieja), muestra sus iniciales */
+function FotoOIniciales({ foto, nombre, iniciales }: { foto: string; nombre: string; iniciales: string }) {
+  const [broken, setBroken] = useState(false);
+  const src = foto && foto.startsWith("/") ? foto : foto ? `/${foto.replace(/^\/+/, "")}` : "";
+  return (
+    <div className="aspect-square bg-gradient-to-br from-neutral-100 to-neutral-200 mb-4 overflow-hidden flex items-center justify-center rounded-sm">
+      {src && !broken ? (
+        <img src={src} alt={nombre} className="w-full h-full object-cover" onError={() => setBroken(true)} />
+      ) : (
+        <span className="text-4xl font-light text-neutral-400">{iniciales}</span>
+      )}
+    </div>
+  );
+}
+
 function DepartamentosSection() {
   const [miembros, setMiembros] = useState<DepartamentoMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,13 +77,7 @@ function DepartamentosSection() {
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {miembrosDepto.map((m, i) => (
                     <motion.div key={m.id || i} custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-center">
-                      <div className="aspect-square bg-gradient-to-br from-neutral-100 to-neutral-200 mb-4 overflow-hidden flex items-center justify-center rounded-sm">
-                        {m.foto ? (
-                          <img src={m.foto} alt={m.nombre} className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="text-4xl font-light text-neutral-400">{getInitials(m.nombre)}</span>
-                        )}
-                      </div>
+                      <FotoOIniciales foto={m.foto} nombre={m.nombre} iniciales={getInitials(m.nombre)} />
                       <h4 className="font-normal text-neutral-900 text-sm mb-1">{m.nombre}</h4>
                       {m.cargo && <p className="text-xs text-amber-600 uppercase tracking-wider font-light">{m.cargo}</p>}
                     </motion.div>
@@ -166,36 +175,30 @@ export default function NosotrosPage() {
               {
                 nombre: "Gissel Velasco",
                 cargo: "Vicepresidente",
-                iniciales: "N2",
+                iniciales: "GV",
                 foto: "/images/directiva/vice.png",
               },
               {
                 nombre: "Dylan Rodriguez",
                 cargo: "Secretario",
-                iniciales: "N3",
+                iniciales: "DR",
                 foto: "/images/directiva/secre.png",
               },
               {
                 nombre: "Santiago Reascos",
                 cargo: "Tesorero",
-                iniciales: "N4",
+                iniciales: "SR",
                 foto: "/images/directiva/teso.png",
               },
               {
                 nombre: "Diana Mora",
                 cargo: "Comunicación",
-                iniciales: "N5",
+                iniciales: "DM",
                 foto: "",
               },
             ].map((m, i) => (
               <motion.div key={i} custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-center">
-                <div className="aspect-square bg-gradient-to-br from-neutral-100 to-neutral-200 mb-4 overflow-hidden flex items-center justify-center">
-                  {m.foto ? (
-                    <img src={m.foto} alt={m.nombre} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-4xl font-light text-neutral-400">{m.iniciales}</span>
-                  )}
-                </div>
+                <FotoOIniciales foto={m.foto} nombre={m.nombre} iniciales={m.iniciales} />
                 <h3 className="font-normal text-neutral-900 text-base mb-1">{m.nombre}</h3>
                 <p className="text-xs text-amber-600 uppercase tracking-wider font-light">{m.cargo}</p>
               </motion.div>

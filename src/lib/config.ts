@@ -21,8 +21,14 @@ import type { ModuleConfig, ModuleKey, NewsCategory } from "./types";
 export const GITHUB_CONFIG = {
   /** Dueño del repositorio (la cuenta de GitHub) */
   owner: "aefnyt",
-  /** Nombre del repositorio */
-  repo: "web_aefn",
+  /**
+   * Nombre del repositorio.
+   * ⚠️ IMPORTANTE: debe ser "aefn_web" — el repo del que Vercel despliega el
+   * sitio. Antes apuntaba a "web_aefn" (un repo paralelo), lo que partía los
+   * datos en dos: el admin escribía en web_aefn pero las imágenes estáticas se
+   * servían desde aefn_web (fotos 404) y los JSON divergían entre ambos repos.
+   */
+  repo: "aefn_web",
   /** Rama donde se guardan los cambios */
   branch: "main",
 } as const;

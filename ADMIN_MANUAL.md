@@ -381,7 +381,7 @@ La página `/creditos` muestra un agradecimiento a todas las personas que han co
 
 Esta página **se edita directamente en el código** (no hay formulario). Para añadir un colaborador:
 
-1. Ve al repositorio en GitHub: `github.com/aefnyt/web_aefn`
+1. Ve al repositorio en GitHub: `github.com/aefnyt/aefn_web`
 2. Abre el archivo `src/app/creditos/page.tsx`
 3. Busca el array `COLABORADORES` (al inicio del archivo)
 4. Añade un objeto siguiendo el formato:
@@ -482,7 +482,7 @@ Sí. Todos los cambios generan un commit en GitHub con:
 - Mensaje descriptivo (ej: "Add profesor: Dr. Juan Pérez")
 - Diff (qué cambió exactamente)
 
-Ve a `github.com/aefnyt/web_aefn/commits/main` para ver el historial.
+Ve a `github.com/aefnyt/aefn_web/commits/main` para ver el historial.
 
 ### ¿Qué pasa si se borra algo por accidente?
 
@@ -504,7 +504,7 @@ Si tienes problemas o preguntas que no están en este manual:
 
 - **Email:** decanatoecfn@yachaytech.edu.ec
 - **Instagram:** @aefn_yt
-- **Repositorio:** github.com/aefnyt/web_aefn
+- **Repositorio:** github.com/aefnyt/aefn_web
 
 ---
 

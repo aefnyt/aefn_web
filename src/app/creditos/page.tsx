@@ -210,7 +210,7 @@ export default function CreditosPage() {
             </a>{" "}
             o visita nuestro repositorio en{" "}
             <a
-              href="https://github.com/aefnyt/web_aefn"
+              href="https://github.com/aefnyt/aefn_web"
               target="_blank"
               rel="noopener noreferrer"
               className="text-amber-600 hover:text-amber-700 underline"

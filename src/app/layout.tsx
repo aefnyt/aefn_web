@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   keywords: ["AEFN", "Yachay Tech", "Física", "Nanotecnología", "Asociación de Estudiantes"],
   authors: [{ name: "AEFN" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/logo.svg",
   },
   openGraph: {
     title: "AEFN - Asociación de Estudiantes de Física y Nanotecnología",
@@ -42,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >

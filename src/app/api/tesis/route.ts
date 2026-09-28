@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 3. Leer JSON actual
-    const { data: tesis, sha } = await readJsonForWrite<Tesis[]>(JSON_PATH, "title");
+    const { data: tesis, sha } = await readJsonForWrite<Tesis>(JSON_PATH, "title");
     const lista = tesis ?? [];
 
     // SAFEGUARD: Si la lectura falló, NO sobrescribir
@@ -163,7 +163,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const { data: tesisList, sha } = await readJsonForWrite<Tesis[]>(JSON_PATH, "title");
+    const { data: tesisList, sha } = await readJsonForWrite<Tesis>(JSON_PATH, "title");
     const lista = tesisList ?? [];
 
     // SAFEGUARD: Si la lectura falló, NO sobrescribir
@@ -248,7 +248,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Falta el campo: title." }, { status: 400 });
     }
 
-    const { data: tesisList, sha } = await readJsonForWrite<Tesis[]>(JSON_PATH, "title");
+    const { data: tesisList, sha } = await readJsonForWrite<Tesis>(JSON_PATH, "title");
     const lista = tesisList ?? [];
 
     // SAFEGUARD: Si la lectura falló, NO sobrescribir

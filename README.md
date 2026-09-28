@@ -83,8 +83,8 @@ Solo ve a la URL del sitio y navega. No necesitas cuenta ni clave.
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/aefnyt/web_aefn.git
-cd web_aefn
+git clone https://github.com/aefnyt/aefn_web.git
+cd aefn_web
 
 # Instalar dependencias
 bun install
@@ -104,7 +104,7 @@ Abre `http://localhost:3000` en tu navegador.
 ## 📁 Estructura del proyecto
 
 ```
-web_aefn/
+aefn_web/
 ├── public/                  # Sitio estático original (HTML/CSS/JS) + datos JSON
 │   ├── index.html           # Página principal
 │   ├── data/                # Archivos JSON (editables vía admin)
@@ -248,7 +248,7 @@ Ubicación: `public/images/logos/`
 
 - 📧 **Email:** decanatoecfn@yachaytech.edu.ec
 - 📸 **Instagram:** [@aefn_yt](https://www.instagram.com/aefn_yt/)
-- 🐙 **GitHub:** [aefnyt/web_aefn](https://github.com/aefnyt/web_aefn)
+- 🐙 **GitHub:** [aefnyt/aefn_web](https://github.com/aefnyt/aefn_web)
 
 ---
 

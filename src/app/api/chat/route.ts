@@ -12,11 +12,14 @@
  * Las claves van en variables de entorno de Vercel, NUNCA en el código.
  */
 import { NextRequest, NextResponse } from "next/server";
-import { searchKnowledge, type KnowledgeChunk } from "@/lib/chat-search";
+import { searchKnowledge, buildContext as buildContextFromChunks, type KnowledgeChunk } from "@/lib/chat-search";
 
 export const runtime = "nodejs";
 
 type Msg = { role: "user" | "assistant"; content: string };
+
+/** Resultado de la búsqueda RAG: fragmento + score de relevancia */
+type SearchResult = { chunk: KnowledgeChunk; score: number };
 
 const BOT_NAME = process.env.CHATBOT_NAME || "Asistente AEFN";
 
@@ -24,9 +27,9 @@ const SYSTEM_PROMPT = `Eres ${BOT_NAME}, el asistente virtual de la Asociación 
 
 Reglas:
 - Responde SIEMPRE en el idioma en que te escriben (normalmente español), de forma breve, clara y amable.
-- Usa SOLO la información de la sección CONTEXTO. Si la respuesta no está ahí, dilo con honestidad y sugiere escribir a la AEFN por la página de contacto (/contact.html). No inventes nombres, fechas, correos ni cifras.
+- Usa SOLO la información de la sección CONTEXTO. Si la respuesta no está ahí, dilo con honestidad y sugiere revisar las secciones del sitio o preguntar a los miembros de la AEFN. No inventes nombres, fechas, correos ni cifras.
 - Puedes usar **negritas** y listas cortas con "- ". No uses títulos ni tablas.
-- Si mencionas una página del sitio, usa estos enlaces: profesores → /profesores.html, eventos → /calendario.html, clubes → /clubes.html, investigación → /investigacion.html, galería → /galeria.html, noticias → /noticias, contacto → /contact.html.`;
+- Si mencionas una página del sitio, usa estos enlaces: profesores → /profesores, eventos → /calendario, clubes → /clubes, investigación → /investigacion, galería → /galeria, noticias → /noticias, departamentos y directiva → /nosotros.`;
 
 // ---------- Límite de uso por IP (protege tu cuota gratis) ----------
 const WINDOW_MS = 10 * 60 * 1000;
@@ -41,9 +44,14 @@ function rateLimited(ip: string) {
   return list.length > MAX_REQ;
 }
 
-function buildContext(found: Doc[]) {
-  if (!found.length) return "(No se encontró información relacionada.)";
-  return found.map((d, i) => `[${i + 1}] Fuente: ${d.source}\n${d.text}`).join("\n\n---\n\n");
+// ---------- Búsqueda RAG sobre la base de conocimiento ----------
+function search(question: string, maxResults: number): SearchResult[] {
+  return searchKnowledge(question, maxResults);
+}
+
+function buildContext(results: SearchResult[]): string {
+  const context = buildContextFromChunks(results);
+  return context || "(No se encontró información relacionada.)";
 }
 
 async function askGemini(history: Msg[], question: string, context: string) {
@@ -91,11 +99,11 @@ async function askGroq(history: Msg[], question: string, context: string) {
   return data?.choices?.[0]?.message?.content?.trim() || null;
 }
 
-function fallbackAnswer(found: Doc[]) {
+function fallbackAnswer(found: SearchResult[]) {
   if (!found.length) {
-    return "No encontré información sobre eso. Puedes escribirle a la AEFN desde la página de [contacto](/contact.html).";
+    return "No encontré información sobre eso. Puedes revisar las secciones del sitio (profesores, clubes, calendario) o preguntarme de otra forma.";
   }
-  const top = found.slice(0, 2).map((d) => `**${d.source}**\n${d.text.slice(0, 400)}${d.text.length > 400 ? "…" : ""}`);
+  const top = found.slice(0, 2).map((r) => `**${r.chunk.source}**\n${r.chunk.text.slice(0, 400)}${r.chunk.text.length > 400 ? "…" : ""}`);
   return `Esto es lo más relacionado que encontré:\n\n${top.join("\n\n")}`;
 }
 

@@ -5,7 +5,8 @@
  *   1. Todos los archivos de la carpeta /conocimiento (.md, .txt, .pdf, .docx, .json)
  *   2. Los datos del sitio en /public/data/*.json (profesores, noticias, eventos...)
  *
- * Los parte en fragmentos pequeños y los guarda en src/data/knowledge.json.
+ * Los parte en fragmentos pequeños y los guarda en public/data/knowledge-index.json,
+ * con el formato exacto que lee src/lib/chat-search.ts: {id, text, source, section}.
  * El endpoint /api/chat busca en esos fragmentos los más relevantes para
  * cada pregunta y se los pasa al modelo de IA como contexto.
  *
@@ -18,7 +19,7 @@ import path from "node:path";
 const ROOT = process.cwd();
 const DOCS_DIR = path.join(ROOT, "conocimiento");
 const SITE_DATA_DIR = path.join(ROOT, "public", "data");
-const OUT_FILE = path.join(ROOT, "src", "data", "knowledge.json");
+const OUT_FILE = path.join(ROOT, "public", "data", "knowledge-index.json");
 
 const CHUNK_SIZE = 900; // caracteres por fragmento
 const CHUNK_OVERLAP = 150;
@@ -35,7 +36,27 @@ const SITE_LABELS = {
   "papers.json": "Publicaciones (papers)",
   "theses.json": "Tesis",
   "gallery.json": "Galería",
+  "departamentos.json": "Departamentos AEFN",
 };
+
+/** Convierte un texto en un id-slug corto (para el campo id del índice) */
+function slugify(text) {
+  return String(text)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .slice(0, 80);
+}
+
+/** Deduce la sección (título) de un fragmento: su primera línea si parece título */
+function sectionOf(text, fallback) {
+  const first = text.split("\n")[0].trim();
+  if (first && first.length <= 90 && text.length > first.length) return first;
+  return fallback;
+}
 
 function clean(text) {
   return text.replace(/\r/g, "").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
@@ -110,11 +131,25 @@ async function walk(dir) {
 
 async function main() {
   const docs = [];
+  let seq = 0;
+
+  /** Añade fragmentos con el formato que lee chat-search.ts */
+  function pushChunks(text, source, sectionFallback) {
+    const parts = chunk(text);
+    parts.forEach((t) => {
+      const section = sectionOf(t, sectionFallback);
+      const slug = slugify(section);
+      docs.push({ id: `${slugify(source)}#${slug || String(seq)}`, text: t, source, section });
+      seq++;
+    });
+    return parts.length;
+  }
 
   // 1. Documentos propios
   const files = await walk(DOCS_DIR);
   for (const file of files) {
     const rel = path.relative(DOCS_DIR, file);
+    const source = rel.replace(/\.[^.]+$/, "");
     const ext = path.extname(file).toLowerCase();
     if (path.basename(file).toLowerCase() === "readme.md") continue;
     try {
@@ -127,9 +162,8 @@ async function main() {
         console.warn(`  (omitido, formato no soportado) ${rel}`);
         continue;
       }
-      const parts = chunk(text);
-      parts.forEach((t) => docs.push({ source: rel, text: t }));
-      console.log(`  ✓ ${rel} → ${parts.length} fragmentos`);
+      const n = pushChunks(text, source, source);
+      console.log(`  ✓ ${rel} → ${n} fragmentos`);
     } catch (err) {
       console.warn(`  ✗ No se pudo leer ${rel}: ${err.message}`);
     }
@@ -140,19 +174,21 @@ async function main() {
     try {
       const data = JSON.parse(await fs.readFile(path.join(SITE_DATA_DIR, fileName), "utf8"));
       const items = Array.isArray(data) ? data : [data];
+      let n = 0;
       for (const item of items) {
         const text = objectToText(item);
         if (!text.trim()) continue;
-        chunk(text).forEach((t) => docs.push({ source: `Sitio web · ${label}`, text: t }));
+        const itemName = item.nombre || item.titulo || item.title || item.album || item.id || label;
+        n += pushChunks(text, `Sitio web · ${label}`, String(itemName));
       }
-      console.log(`  ✓ ${fileName} → ${items.length} elementos`);
+      console.log(`  ✓ ${fileName} → ${n} fragmentos (${items.length} elementos)`);
     } catch {
       /* archivo no existe: se ignora */
     }
   }
 
   await fs.mkdir(path.dirname(OUT_FILE), { recursive: true });
-  await fs.writeFile(OUT_FILE, JSON.stringify({ generatedAt: new Date().toISOString(), docs }));
+  await fs.writeFile(OUT_FILE, JSON.stringify(docs));
   console.log(`\nBase de conocimiento lista: ${docs.length} fragmentos → ${path.relative(ROOT, OUT_FILE)}`);
 }
 

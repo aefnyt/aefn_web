@@ -40,7 +40,7 @@ Esta guía te lleva desde cero hasta tener el sitio web de la AEFN funcionando e
 
 Antes de empezar necesitas:
 
-1. **Una cuenta de GitHub** con acceso al repositorio `aefnyt/web_aefn`
+1. **Una cuenta de GitHub** con acceso al repositorio `aefnyt/aefn_web`
    - Si no tienes acceso, pídelo al administrador actual
 2. **El código del proyecto** ya subido a ese repositorio
    - (Si estás leyendo esto, probablemente ya está hecho)
@@ -68,7 +68,7 @@ El **Personal Access Token (PAT)** es como una contraseña que permite que Verce
 | **Token name** | `AEFN Web Editor` |
 | **Expiration** | `90 days` (recomendado) |
 | **Resource owner** | `aefnyt` (la cuenta de la asociación) |
-| **Repository access** | Selecciona **"Only select repositories"** → marca `aefnyt/web_aefn` |
+| **Repository access** | Selecciona **"Only select repositories"** → marca `aefnyt/aefn_web` |
 | **Repository permissions** → **Contents** | `Read and write` ⚠️ (esto es lo que permite leer y modificar los JSON) |
 | **Repository permissions** → todo lo demás | Déjalo en `No access` (por seguridad) |
 
@@ -120,11 +120,11 @@ Vercel te enviará un email de confirmación. Haz clic en el enlace para verific
 
 1. En el dashboard de Vercel, haz clic en **"Add New..."** → **"Project"**
 
-2. Verás una lista de tus repositorios de GitHub. Busca `aefnyt/web_aefn`
+2. Verás una lista de tus repositorios de GitHub. Busca `aefnyt/aefn_web`
 
 3. Si no lo ves:
    - Haz clic en **"Adjust GitHub App Permissions"**
-   - Autoriza a Vercel a acceder al repositorio `aefnyt/web_aefn`
+   - Autoriza a Vercel a acceder al repositorio `aefnyt/aefn_web`
    - Vuelve a la lista y búscalo
 
 4. Haz clic en **"Import"** al lado del repositorio
@@ -254,7 +254,7 @@ Cuando termine, verás:
 2. Crea un profesor de prueba (nombre: "Test", título: "Test")
 3. Haz clic en **Guardar**
 4. Si todo está bien configurado, verás un mensaje de éxito ✅
-5. Ve a GitHub → `github.com/aefnyt/web_aefn/commits/main`
+5. Ve a GitHub → `github.com/aefnyt/aefn_web/commits/main`
 6. Deberías ver un commit que dice "Add profesor: Test"
 
 > ✅ Si ves el commit en GitHub, ¡todo funciona perfectamente!

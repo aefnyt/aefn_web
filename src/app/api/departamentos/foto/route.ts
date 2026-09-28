@@ -46,7 +46,8 @@ export async function POST(request: NextRequest) {
     if (!uploadResult.success) {
       return NextResponse.json({ error: uploadResult.message }, { status: 500 });
     }
-    const fotoRelativa = `${IMAGES_PATH.replace("public/", "")}/${filename}`;
+    // Ruta web absoluta (con "/") — consistente con profesores y con el frontend
+    const fotoRelativa = `/${IMAGES_PATH.replace(/^public\/?/, "")}/${filename}`;
     const oldFoto = member.foto;
     member.foto = fotoRelativa;
     // Re-leer SHA fresco después del commit binario (el SHA anterior quedó obsoleto)
@@ -56,7 +57,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: writeResult.message }, { status: 500 });
     }
     if (oldFoto && oldFoto !== fotoRelativa) {
-      try { await deleteFile(`public/${oldFoto}`); } catch {}
+      // Normaliza: los datos viejos pueden traer la ruta con o sin "/" inicial
+      const oldRepoPath = oldFoto.startsWith("/") ? `public${oldFoto}` : `public/${oldFoto}`;
+      try { await deleteFile(oldRepoPath, `Delete old photo: ${oldFoto}`); } catch {}
     }
     return NextResponse.json({ success: true, foto: fotoRelativa, commitSha: writeResult.commitSha });
   } catch (error) {
@@ -91,7 +94,8 @@ export async function DELETE(request: NextRequest) {
     }
     const member = lista[index];
     if (member.foto) {
-      try { await deleteFile(`public/${member.foto}`); } catch {}
+      const repoPath = member.foto.startsWith("/") ? `public${member.foto}` : `public/${member.foto}`;
+      try { await deleteFile(repoPath, `Delete photo: ${member.foto}`); } catch {}
     }
     member.foto = "";
     const writeResult = await writeJsonFile(JSON_PATH, lista, sha, `Delete foto: ${member.nombre}`);

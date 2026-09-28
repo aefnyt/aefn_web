@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     if (!nuevo || !nuevo.nombre || !nuevo.departamento) {
       return NextResponse.json({ error: "Faltan campos obligatorios: nombre, departamento." }, { status: 400 });
     }
-    const { data: miembros, sha } = await readJsonForWrite<DepartamentoMember[]>(JSON_PATH, "id");
+    const { data: miembros, sha } = await readJsonForWrite<DepartamentoMember>(JSON_PATH, "id");
     const lista = miembros ?? [];
     if (miembros === null) {
       return NextResponse.json({ error: "No se pudieron leer los datos existentes." }, { status: 500 });
@@ -64,7 +64,7 @@ export async function PUT(request: NextRequest) {
     if (!id || !member) {
       return NextResponse.json({ error: "Faltan campos: id, member." }, { status: 400 });
     }
-    const { data: miembros, sha } = await readJsonForWrite<DepartamentoMember[]>(JSON_PATH, "id");
+    const { data: miembros, sha } = await readJsonForWrite<DepartamentoMember>(JSON_PATH, "id");
     const lista = miembros ?? [];
     if (miembros === null) {
       return NextResponse.json({ error: "No se pudieron leer los datos existentes." }, { status: 500 });
@@ -104,7 +104,7 @@ export async function DELETE(request: NextRequest) {
     if (!id) {
       return NextResponse.json({ error: "Falta el campo: id." }, { status: 400 });
     }
-    const { data: miembros, sha } = await readJsonForWrite<DepartamentoMember[]>(JSON_PATH, "id");
+    const { data: miembros, sha } = await readJsonForWrite<DepartamentoMember>(JSON_PATH, "id");
     const lista = miembros ?? [];
     if (miembros === null) {
       return NextResponse.json({ error: "No se pudieron leer los datos existentes." }, { status: 500 });

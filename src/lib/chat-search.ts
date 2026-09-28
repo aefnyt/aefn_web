@@ -11,7 +11,7 @@ import { join } from "path";
  * normalización. No requiere embeddings ni APIs externas.
  */
 
-interface KnowledgeChunk {
+export interface KnowledgeChunk {
   id: string;
   text: string;
   source: string;

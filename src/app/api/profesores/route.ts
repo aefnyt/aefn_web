@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 3. Leer JSON actual
-    const { data: profesores, sha } = await readJsonForWrite<Profesor[]>(JSON_PATH, "id");
+    const { data: profesores, sha } = await readJsonForWrite<Profesor>(JSON_PATH, "id");
     const lista = profesores ?? [];
 
     // SAFEGUARD: Si la lectura falló, NO sobrescribir
@@ -185,7 +185,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const { data: profesores, sha } = await readJsonForWrite<Profesor[]>(JSON_PATH, "id");
+    const { data: profesores, sha } = await readJsonForWrite<Profesor>(JSON_PATH, "id");
     const lista = profesores ?? [];
 
     // SAFEGUARD: Si la lectura falló, NO sobrescribir
@@ -303,7 +303,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Falta el campo: id." }, { status: 400 });
     }
 
-    const { data: profesores, sha } = await readJsonForWrite<Profesor[]>(JSON_PATH, "id");
+    const { data: profesores, sha } = await readJsonForWrite<Profesor>(JSON_PATH, "id");
     const lista = profesores ?? [];
 
     // SAFEGUARD: Si la lectura falló, NO sobrescribir

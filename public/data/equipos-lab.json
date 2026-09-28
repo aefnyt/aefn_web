@@ -1,0 +1,114 @@
+[
+  {
+    "slug": "arbitrary-waveform-generator-keysight",
+    "nombre": "Arbitrary waveform generator – Keysight",
+    "descripcion": "El generador de formas de onda Keysight es una herramienta avanzada que ofrece dos salidas arbitrarias y una entrada de trigger externo, ideal para una amplia gama de aplicaciones científicas. Este generador permite crear y generar señales con funciones estándar, así como definir formas de onda personalizadas según las necesidades específicas del experimento. Su capacidad para conectarse a internet y su puerto USB facilitan la conexión remota, lo que permite controlar y monitorear el dispositivo de manera eficiente desde cualquier lugar. Lo que facilita su uso en la investigación y el desarrollo en electrónica, permitiendo una variedad de generación de señales precisas.",
+    "imagen": "/images/equipos/arbitrary-waveform-generator-keysight.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/arbitrary-waveform-generator-keysight/"
+  },
+  {
+    "slug": "atc-orion-8-sputtering-system",
+    "nombre": "ATC ORION 8 Sputtering System",
+    "descripcion": "Es un sistema personalizado para el depósito de capas delgadas de metales y óxidos metálicos con dos fuentes DC y tres fuentes RF con capacidad de co-sputtering. Se pueden procesar capas desde unidades a centenas de nm con gran uniformidad en superficies de hasta 4’’ de diámetro. Opera con gases como Ar, O2 o N para formar óxidos o nitruros metálicos. Cuenta con calefactor de muestras que alcanza los 700ºC, medidor de tasa de depósito, antecámara de depósito con caset con capacidad hasta 10 sustratos.",
+    "imagen": "/images/equipos/atc-orion-8-sputtering-system.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/atc-orion-8-sputtering-system/"
+  },
+  {
+    "slug": "centrifuga-multiproposito-spin-coater",
+    "nombre": "Centrífuga Multipropósito Spin Coater",
+    "descripcion": "Equipo que combina las funciones de una centrífuga y un spin coater en un solo aparato. Es capaz de realizar tanto la centrifugación como el recubrimiento por rotación de manera precisa y controlada. Ofrece alta velocidad de rotación y control preciso de la aceleración. Su interfaz de usuario es intuitiva y fácil de operar.",
+    "imagen": "/images/equipos/centrifuga-multiproposito-spin-coater.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/centrifuga-multiproposito-spin-coater/"
+  },
+  {
+    "slug": "dmm-digital-multimeter-keysight",
+    "nombre": "DMM (Digital multimeter) – Keysight",
+    "descripcion": "El multímetro digital Keysight es una herramienta esencial para la medición precisa de voltaje, corriente y resistencia, ofreciendo una versatilidad destacable para diversas aplicaciones científicas. Este multímetro permite realizar mediciones a 2 y 4 puntas, proporcionando una alta precisión en la evaluación de componentes y circuitos. Su capacidad para conectarse a internet y su puerto USB facilitan la conexión remota, lo que permite un acceso conveniente a los datos y el control del dispositivo desde una distancia. Estas características hacen que el multímetro digital Keysight sea ideal para investigaciones que requieren mediciones detalladas y un análisis profundo de circuitos eléctricos, contribuyendo a la validación y desarrollo de tecnologías.",
+    "imagen": "/images/equipos/dmm-digital-multimeter-keysight.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/dmm-digital-multimeter-keysight/"
+  },
+  {
+    "slug": "enlazador-de-alambre-de-control-digital-xy-para-hilo-de-20-um",
+    "nombre": "Enlazador de alambre de control digital XY para hilo de 20 um.",
+    "descripcion": "El equipo enlazador de alambre utiliza tecnología de posicionamiento para repetir soldaduras en materiales semiconductores y conectarlos mediante cable de 20 um a los terminales de circuitos para su correspondiente caracterización. Este equipo permite utilizar los materiales fabricados mediante CVD, Fotolitografía y deposición atómica para crear dispositivos que cumplan la función determinada para la que fueron creados a nivel de prototipo.",
+    "imagen": "/images/equipos/enlazador-de-alambre-de-control-digital-xy-para-hilo-de-20-um.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/enlazador-de-alambre-de-control-digital-xy-para-hilo-de-20-um/"
+  },
+  {
+    "slug": "espectrometro-de-fotoemision-de-electrones-phy-5000-versaprove-iii",
+    "nombre": "Espectrómetro de Fotoemisión de Electrones PHY 5000 Versaprove III",
+    "descripcion": "El espectrómetro es una herramienta de análisis de superficies de materiales sólidos mediante la fotoemisión de electrones por estimulación de fotones de alta energía. Permite realizar un monitoreo de los cambios químicos en la superficie de materiales brindando información composicional química y también los cambios que se dan en el ambiente químico de cada elemento mediante su monitoreo de alta resolución.",
+    "imagen": "/images/equipos/espectrometro-de-fotoemision-de-electrones-phy-5000-versaprove-iii.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/espectrometro-de-fotoemision-de-electrones-phy-5000-versaprove-iii/"
+  },
+  {
+    "slug": "estufa-de-laboratorio-ecocell",
+    "nombre": "Estufa de Laboratorio ECOCELL",
+    "descripcion": "Equipo diseñado para el tratamiento térmico de materiales. Ideal para el secado, curado y cocción de muestras. Su control preciso de la temperatura asegura la uniformidad del calor en todo el espacio interior. Ofrece una interfaz intuitiva. Trabaja desde 5 °C sobre la temperatura ambiente hasta: 250 °C.",
+    "imagen": "/images/equipos/estufa-de-laboratorio-ecocell.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/estufa-de-laboratorio-ecocell/"
+  },
+  {
+    "slug": "homogeneizador-m-tops-con-soporte-y-pinzas-de-3700-a-2700-rpm",
+    "nombre": "Homogeneizador M Tops con Soporte y Pinzas  de 3700 a 2700 rpm",
+    "descripcion": "Modelo SR30, un rotor/estator de alta velocidad diseñado para emulsificar, homogeneizar, mezclar y dispersar muestras de 10 a 2000 ml. Fabricado en acero inoxidable 316L. Con un rango de velocidad de 3700 a 2700 rpm y control de velocidad continuo, este equipo ofrece un rendimiento óptimo con un motor de 670W y un velocímetro ajustable.",
+    "imagen": "/images/equipos/homogeneizador-m-tops-con-soporte-y-pinzas-de-3700-a-2700-rpm.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/homogeneizador-m-tops-con-soporte-y-pinzas-de-3700-a-2700-rpm/"
+  },
+  {
+    "slug": "horno-mufla-boeco-mf-8-1100",
+    "nombre": "Horno Mufla BOECO – MF 8/1100",
+    "descripcion": "Mufla: horno de alta eficiencia térmica, diseñado para el tratamiento de materiales, cerámicas y cocción de muestras. Con una capacidad de 8.2 L y una temperatura máxima de 1100°C, este horno asegura un calentamiento rápido y un bajo consumo de energía. Su cámara de fibra cerámica al vacío y elementos calentadores integrados garantizan estabilidad y uniformidad térmica, con una variación máxima de ±2°C. Controlado por microprocesador y equipado con un regulador electrónico PID, este equipo ofrece precisión en el manejo de la temperatura. Perfecto para aplicaciones que requieren un control térmico riguroso.",
+    "imagen": "/images/equipos/horno-mufla-boeco-mf-8-1100.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/horno-mufla-boeco-mf-8-1100/"
+  },
+  {
+    "slug": "molino-de-bolas-mm500-nano-retsch",
+    "nombre": "Molino de bolas MM500 NANO RETSCH",
+    "descripcion": "Molino de bolas de laboratorio de alta energía, ideal para la molienda en seco, húmedo y criogénica. Con una velocidad máxima de 30 Hz, este equipo reduce granulometrías de 10 mm a 0,1 µm, y permite un control preciso de la temperatura entre -100 °C y 100 °C. Su diseño incluye GrindControl para monitorear la temperatura y presión internas, y tapas especiales para controlar la atmósfera en el recipiente. Fácil de usar, cuenta con pantalla táctil y programas almacenables, adaptándose a diversas necesidades experimentales.",
+    "imagen": "/images/equipos/molino-de-bolas-mm500-nano-retsch.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/molino-de-bolas-mm500-nano-retsch/"
+  },
+  {
+    "slug": "mti-otf-1200x-iii-horno-tubular-3-zonas",
+    "nombre": "MTI OTF-1200X-III Horno Tubular 3 Zonas",
+    "descripcion": "El horno tubular de tres zonas es un equipo avanzado diseñado para la síntesis de materiales de carbono en el ámbito de la nanotecnología. Este horno cuenta con tres zonas de calentamiento independientes, cada una capaz de alcanzar temperaturas de hasta 1200 °C. Esta configuración permite un control preciso del perfil térmico a lo largo del tubo de proceso, esencial para la producción uniforme de nanomateriales.",
+    "imagen": "/images/equipos/mti-otf-1200x-iii-horno-tubular-3-zonas.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/mti-otf-1200x-iii-horno-tubular-3-zonas/"
+  },
+  {
+    "slug": "osciloscopio-de-almacenamiento-digital-keysight",
+    "nombre": "Osciloscopio de almacenamiento digital – Keysight",
+    "descripcion": "El osciloscopio de almacenamiento digital Keysight es una herramienta avanzada que ofrece una alta frecuencia de muestreo y una extensa capacidad de memoria, permitiendo la captura y análisis detallado de señales complejas. Sus características incluyen una alta resolución en pantalla, capacidades de análisis en tiempo real, y funciones avanzadas como el análisis de espectro, posee conexión a internet y puerto USB, lo que permite manejarlo de forma remota. Estas características hacen que el osciloscopio sea especialmente útil en aplicaciones científicas para la investigación y desarrollo en electrónica, telecomunicaciones y sistemas de control. Permite realizar mediciones precisas y detalladas, analizar fenómenos eléctricos complejos, y optimizar diseños experimentales, proporcionando una visión profunda de los comportamientos de señal y facilitando la resolución de problemas técnicos avanzados.",
+    "imagen": "/images/equipos/osciloscopio-de-almacenamiento-digital-keysight.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/osciloscopio-de-almacenamiento-digital-keysight/"
+  },
+  {
+    "slug": "potenciostato-galvanostato-vionic",
+    "nombre": "Potenciostato – Galvanostato VIONIC",
+    "descripcion": "Instrumento avanzado utilizado en electroquímica. Este dispositivo combina las funciones de un potenciostato y un galvanostato en un solo equipo. Es un instrumento que puede controlar y medir tanto el potencial eléctrico como la corriente en una celda electroquímica. Alta precisión en mediciones. Amplio rango de corriente y voltaje. Interfaz de usuario intuitiva. Usos generales: Investigación en electroquímica. Desarrollo y prueba de baterías y celdas de combustible. Estudios de corrosión. Análisis de recubrimientos. Caracterización de materiales",
+    "imagen": "/images/equipos/potenciostato-galvanostato-vionic.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/potenciostato-galvanostato-vionic/"
+  },
+  {
+    "slug": "quantum-design-microwriter-ml3",
+    "nombre": "Quantum Design  MicroWriter ML3",
+    "descripcion": "Es un sistema de fotolitografía que opera con resolución de hasta 1um con resina fotosensible a luz de 405nm de longitud de onda. Con área de grabado 149&#215;149 mm permite procesar un gran tamaño de sustratos. La velocidad de grabado alcanza los 50 mm2/min. Posee un microscopio óptico 10X con cámara Olympus que permite alinear la litografía con marcas en los sustratos.",
+    "imagen": "/images/equipos/quantum-design-microwriter-ml3.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/quantum-design-microwriter-ml3/"
+  },
+  {
+    "slug": "tamizadora-analitica-retsch-as-200",
+    "nombre": "Tamizadora analítica RETSCH AS 200",
+    "descripcion": "La tamizadora analítica RETSCH AS 200 ofrece una alta precisión en la separación de partículas en tiempos cortos gracias a su accionamiento electromagnético regulado. Compatible con tamices de 100 mm, 200 mm, 203 mm (8 pulgadas) y 305 mm (12 pulgadas), soporta una altura máxima de apilado de 450 mm para tamices de 200 mm o 203 mm y una capacidad de carga de hasta 3 kg. Su rango de tiempo de tamizado es ajustable entre 1 segundo y 99 minutos, con una frecuencia de vibración variable entre 100 y 3000 vibraciones por minuto. Controlada por un microprocesador con pantalla digital y capacidad para memorizar hasta 99 rutinas SOP, la AS 200 garantiza una reproducibilidad del 100% y es calibrable, cumpliendo con los estándares ISO 9001. Funciona con voltajes de 230 V o 110 V y frecuencias de 50/60 Hz.",
+    "imagen": "/images/equipos/tamizadora-analitica-retsch-as-200.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/tamizadora-analitica-retsch-as-200/"
+  },
+  {
+    "slug": "vsm-vibrating-sample-magnetometer",
+    "nombre": "VSM (Vibrating Sample Magnetometer)",
+    "descripcion": "Equipo para la caracterización del momento magnético de diferentes materiales en función del campo externo aplicado y/o de la temperatura. El rango de campo externo es de +/- 3 Testa y de 400 K a 50K en Temperatura.",
+    "imagen": "/images/equipos/vsm-vibrating-sample-magnetometer.jpg",
+    "origen": "https://yachaytech.edu.ec/equipo-de-lab/vsm-vibrating-sample-magnetometer/"
+  }
+]

@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Navbar, Footer, PageHeader, fadeUp } from "@/components/site-layout";
-import { Mail, Users, FlaskConical, BookOpen, GraduationCap, ExternalLink } from "lucide-react";
+import { Mail, Users, FlaskConical, BookOpen, GraduationCap, ExternalLink, Microscope, ArrowRight } from "lucide-react";
 
 interface Participant { name: string; role: string; }
 interface Project { title: string; year: number; }
@@ -14,19 +15,29 @@ interface ResearchGroup {
 }
 interface Paper { title: string; authors: string; year: number; journal: string; link: string; published: boolean; }
 interface Thesis { title: string; author: string; year: number; abstract: string; link: string; status: string; }
+interface EquipoLab {
+  slug: string;
+  nombre: string;
+  descripcion: string;
+  imagen: string;
+  origen?: string;
+}
 
 export default function InvestigacionPage() {
   const [grupos, setGrupos] = useState<ResearchGroup[]>([]);
   const [papers, setPapers] = useState<Paper[]>([]);
   const [tesis, setTesis] = useState<Thesis[]>([]);
+  const [equipos, setEquipos] = useState<EquipoLab[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Cada fetch es independiente: si un archivo falla, el resto de secciones sigue visible
     Promise.all([
-      fetch("/data/investigation-groups.json").then((r) => r.json()),
-      fetch("/data/papers.json").then((r) => r.json()),
-      fetch("/data/theses.json").then((r) => r.json()),
-    ]).then(([g, p, t]) => { setGrupos(g); setPapers(p); setTesis(t); setLoading(false); }).catch(() => setLoading(false));
+      fetch("/data/investigation-groups.json").then((r) => r.json()).catch(() => []),
+      fetch("/data/papers.json").then((r) => r.json()).catch(() => []),
+      fetch("/data/theses.json").then((r) => r.json()).catch(() => []),
+      fetch("/data/equipos-lab.json").then((r) => r.json()).catch(() => []),
+    ]).then(([g, p, t, e]) => { setGrupos(g); setPapers(p); setTesis(t); setEquipos(e); setLoading(false); }).catch(() => setLoading(false));
   }, []);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-neutral-950"><div className="text-amber-400 text-sm font-light animate-pulse">Cargando...</div></div>;
@@ -123,6 +134,42 @@ export default function InvestigacionPage() {
                   <p className="text-sm text-neutral-600 font-light mb-2">{t.author}</p>
                   {t.abstract && <p className="text-sm text-neutral-500 font-light leading-relaxed">{t.abstract}</p>}
                   {t.link && <a href={t.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm text-amber-600 hover:text-amber-700 transition-colors font-normal mt-3">Ver documento<ExternalLink className="w-3.5 h-3.5" /></a>}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+      {equipos.length > 0 && (
+        <section className="bg-neutral-50 py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-12 max-w-3xl">
+              <p className="text-amber-600 text-sm font-light tracking-widest uppercase mb-3">Infraestructura</p>
+              <h2 className="text-3xl sm:text-4xl font-light text-neutral-900 leading-tight">Equipos de laboratorio</h2>
+              <p className="text-neutral-600 font-light mt-4 leading-relaxed">Equipamiento disponible para docencia e investigación en los laboratorios de la Escuela de Ciencias Físicas y Nanotecnología.</p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {equipos.map((eq, i) => (
+                <motion.div key={eq.slug} custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+                  <Link href={`/investigacion/equipos/${eq.slug}`} className="group block bg-white border border-neutral-200 rounded-lg overflow-hidden hover:border-amber-300 hover:shadow-lg hover:shadow-amber-100/50 transition-all h-full">
+                    <div className="h-44 bg-white flex items-center justify-center p-6 border-b border-neutral-100 overflow-hidden">
+                      {eq.imagen ? (
+                        <img
+                          src={eq.imagen}
+                          alt={eq.nombre}
+                          className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <Microscope className="w-10 h-10 text-neutral-300" strokeWidth={1.5} />
+                      )}
+                    </div>
+                    <div className="p-5">
+                      <h3 className="text-sm font-normal text-neutral-900 leading-snug mb-2 group-hover:text-amber-700 transition-colors">{eq.nombre}</h3>
+                      <p className="text-xs text-neutral-500 font-light leading-relaxed line-clamp-3 mb-3">{eq.descripcion}</p>
+                      <span className="text-xs text-amber-600 font-normal inline-flex items-center gap-1">Ver equipo<ArrowRight className="w-3 h-3" /></span>
+                    </div>
+                  </Link>
                 </motion.div>
               ))}
             </div>

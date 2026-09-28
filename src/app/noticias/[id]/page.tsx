@@ -4,7 +4,8 @@ import { readJsonFile } from "@/lib/github";
 import { MODULES, NEWS_CATEGORIES } from "@/lib/config";
 import type { Noticia, NewsCategory } from "@/lib/types";
 import ReactMarkdown from "react-markdown";
-import { Calendar, User, ArrowLeft, Atom, Tag, Newspaper } from "lucide-react";
+import { Calendar, User, ArrowLeft, Tag } from "lucide-react";
+import { Navbar, Footer } from "@/components/site-layout";
 import { Badge } from "@/components/ui/badge";
 
 /**
@@ -86,30 +87,19 @@ export default async function NoticiaIndividualPage({ params }: PageProps) {
     NEWS_CATEGORIES[noticia.categoria as NewsCategory] || noticia.categoria;
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
-          >
-            <div className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-900 text-white">
-              <Atom className="w-4 h-4" />
-            </div>
-            <span className="font-semibold text-sm">AEFN</span>
-          </Link>
-          <Link
-            href="/noticias"
-            className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Todas las noticias
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen flex flex-col bg-white">
+      {/* Barra de navegación estándar del sitio (igual que el resto de secciones) */}
+      <Navbar />
 
-      <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-8 sm:pb-12">
+        {/* Enlace volver */}
+        <Link
+          href="/noticias"
+          className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1 mb-8"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Todas las noticias
+        </Link>
         {/* Categoría */}
         <div className="mb-4">
           <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-100">
@@ -246,12 +236,8 @@ export default async function NoticiaIndividualPage({ params }: PageProps) {
         </div>
       </article>
 
-      {/* Footer */}
-      <footer className="mt-auto py-6 border-t border-slate-200 bg-slate-50">
-        <div className="max-w-3xl mx-auto px-4 text-center text-xs text-slate-400">
-          AEFN · Asociación de Estudiantes de Física y Nanotecnología · Yachay Tech
-        </div>
-      </footer>
+      {/* Footer estándar del sitio */}
+      <Footer />
     </div>
   );
 }

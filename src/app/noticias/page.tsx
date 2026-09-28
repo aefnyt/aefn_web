@@ -2,7 +2,8 @@ import Link from "next/link";
 import { readJsonFile } from "@/lib/github";
 import { MODULES, NEWS_CATEGORIES } from "@/lib/config";
 import type { Noticia, NewsCategory } from "@/lib/types";
-import { Calendar, User, ArrowRight, Star, Newspaper, Atom, ChevronRight } from "lucide-react";
+import { Calendar, User, ArrowRight, Star, Newspaper, ChevronRight } from "lucide-react";
+import { Navbar, Footer, PageHeader } from "@/components/site-layout";
 
 /**
  * Página pública /noticias
@@ -71,49 +72,15 @@ export default async function NoticiasPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      {/* Header — mesh dark con glow dorado */}
-      <header className="aefn-mesh-dark border-b border-amber-500/20 sticky top-0 z-50 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link
-                href="/"
-                className="inline-flex items-center gap-2.5 group"
-              >
-                <div className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/40 group-hover:shadow-[0_0_18px_rgba(255,215,0,0.6)] transition-shadow">
-                  <Atom className="w-5 h-5 text-amber-400 aefn-spin-slow" />
-                </div>
-                <span className="font-bold text-white group-hover:text-amber-300 transition-colors">
-                  AEFN
-                </span>
-              </Link>
-              <span className="text-amber-500/30">/</span>
-              <h1 className="text-xl font-bold text-white flex items-center gap-2">
-                <Newspaper className="w-5 h-5 text-amber-400" />
-                Noticias
-              </h1>
-            </div>
-            <Link
-              href="/"
-              className="aefn-mono text-xs text-amber-400/80 hover:text-amber-300 hidden sm:flex items-center gap-1.5 transition-colors"
-            >
-              ← <span className="aefn-mono">VOLVER</span>
-            </Link>
-          </div>
-          <p className="text-neutral-400 mt-2 text-sm">
-            Noticias, anuncios e información relevante para la comunidad de Física y Nanotecnología.
-          </p>
-        </div>
-      </header>
+      {/* Barra de navegación estándar del sitio (igual que el resto de secciones) */}
+      <Navbar />
+      <PageHeader
+        label="Noticias · Live"
+        title={<>Noticias y <span className="text-amber-400">anuncios</span></>}
+        description="Noticias, anuncios e información relevante para la comunidad de Física y Nanotecnología."
+      />
 
       <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        {/* Tag científico superior */}
-        <div className="mb-6 flex items-center gap-3">
-          <div className="aefn-tag">
-            <span className="aefn-mono">NOTICIAS · LIVE</span>
-          </div>
-          <div className="aefn-divider flex-1 !my-0" />
-        </div>
 
         {loadError && (
           <div className="p-6 rounded-xl bg-amber-50 border border-amber-300 text-amber-800 aefn-glow">
@@ -283,18 +250,8 @@ export default async function NoticiasPage() {
         )}
       </main>
 
-      {/* Footer — mesh dark con glow */}
-      <footer className="mt-auto aefn-mesh-dark border-t border-amber-500/20 relative">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_14px_rgba(255,215,0,0.5)]" />
-        <div className="max-w-6xl mx-auto px-4 py-6 text-center">
-          <div className="aefn-mono text-xs text-amber-500/70 mb-1">
-            AEFN · YACHAY TECH
-          </div>
-          <div className="text-xs text-neutral-500">
-            Asociación de Estudiantes de Física y Nanotecnología
-          </div>
-        </div>
-      </footer>
+      {/* Footer estándar del sitio */}
+      <Footer />
     </div>
   );
 }

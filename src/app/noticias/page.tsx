@@ -26,6 +26,13 @@ export const dynamic = "force-dynamic"; // Siempre datos frescos
 export const metadata = {
   title: "Noticias - AEFN",
   description: "Noticias y anuncios de la Asociación de Estudiantes de Física y Nanotecnología",
+  openGraph: {
+    title: "Noticias - AEFN",
+    description: "Noticias y anuncios de la Asociación de Estudiantes de Física y Nanotecnología de Yachay Tech",
+    url: "/noticias",
+    type: "website",
+    images: [{ url: "/images/logos/ecfn-symbol.png", width: 625, height: 625, alt: "Símbolo de la ECFN - AEFN" }],
+  },
 };
 
 function formatDate(fecha: string): string {

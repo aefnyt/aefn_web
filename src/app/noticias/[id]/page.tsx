@@ -32,16 +32,46 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-/** Genera metadatos dinámicos para SEO (título de la noticia) */
+/** URL pública del sitio (WhatsApp exige URLs absolutas en og:image) */
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aefn.vercel.app";
+
+/** Genera metadatos dinámicos para SEO + Open Graph (preview al compartir por WhatsApp) */
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
   try {
     const { data } = await readJsonFile<Noticia[]>(MODULES.noticias.jsonPath);
     const noticia = (data ?? []).find((n) => n.id === id);
     if (noticia) {
+      // WhatsApp exige URL absoluta en og:image.
+      // Si la noticia no tiene imagen (o está vacía), usa el símbolo de la ECFN.
+      const img = noticia.imagen ?? "";
+      const imagenOg = /^https?:\/\//.test(img)
+        ? img
+        : img
+          ? `${SITE_URL}/${img.replace(/^\/+/, "")}`
+          : `${SITE_URL}/images/logos/ecfn-symbol.png`;
+
       return {
         title: `${noticia.titulo} - AEFN`,
         description: noticia.resumen || noticia.titulo,
+        alternates: { canonical: `${SITE_URL}/noticias/${noticia.id}` },
+        openGraph: {
+          title: noticia.titulo,
+          description: noticia.resumen || noticia.titulo,
+          url: `${SITE_URL}/noticias/${noticia.id}`,
+          type: "article",
+          siteName: "AEFN",
+          publishedTime: noticia.fecha,
+          authors: [noticia.autor || "AEFN"],
+          tags: noticia.etiquetas?.slice(0, 5),
+          images: [{ url: imagenOg, alt: noticia.titulo }],
+        },
+        twitter: {
+          card: "summary_large_image",
+          title: noticia.titulo,
+          description: noticia.resumen || noticia.titulo,
+          images: [imagenOg],
+        },
       };
     }
   } catch {

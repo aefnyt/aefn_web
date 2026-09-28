@@ -62,7 +62,7 @@ async function askGemini(history: Msg[], question: string, context: string) {
     ...history.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })),
     { role: "user", parts: [{ text: `CONTEXTO:\n${context}\n\nPREGUNTA: ${question}` }] },
   ];
-  const generationConfig: Record<string, unknown> = { temperature: 0.3, maxOutputTokens: 700 };
+  const generationConfig: Record<string, unknown> = { temperature: 0.3, maxOutputTokens: 4000 };
   if (model.startsWith("gemini-2.5-flash")) generationConfig.thinkingConfig = { thinkingBudget: 0 };
 
   const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {

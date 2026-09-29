@@ -52,8 +52,12 @@ es que Gemini **y** Groq fallaron. Abre **`/api/chat`** en el navegador (GET) y 
 - `lastError` del último intento → ejemplos:
   - `Gemini 429: ...` → cuota gratuita agotada (se resetea sola; Groq toma el relevo)
   - `Groq 401: ...` → clave de Groq inválida (revisa que empiece con `gsk_`, sin espacios)
-  - `Groq 404: ...` → modelo retirado → cambia `GROQ_MODEL` por uno vigente
-    (lista actual en console.groq.com → Models)
+  - `Groq 404: ...` → modelo retirado. **Ahora se auto-repara solo**: el bot consulta la
+    lista de modelos vigentes de Groq, elige uno de chat (prioriza llama, máx. 3
+    candidatos) y lo memoriza hasta el próximo despliegue. `GET /api/chat` →
+    `groq.effectiveModel` muestra el modelo elegido (`null` = todavía no ha hecho
+    falta reparar; usa `groq.model`). Si prefieres fijar uno concreto, cambia `GROQ_MODEL`
+    en Vercel (y redespliega).
   - `Gemini 400: ... API key not valid` → rotar la clave
 
 Los `lastError` viven en memoria del servidor: se limpian con cada despliegue, así que

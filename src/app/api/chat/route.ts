@@ -100,27 +100,84 @@ async function askGemini(history: Msg[], question: string, context: string) {
   return text || null;
 }
 
+// ---------- Groq: auto-reparación de modelo ----------
+/**
+ * Groq depreca modelos con frecuencia (error 404 "model not found"). Cuando
+ * pasa, se consulta la lista de modelos vigentes y se elige uno de chat.
+ * La elección se memoriza aquí (variable de módulo) hasta el próximo despliegue.
+ */
+let effectiveGroqModel: string | null = null;
+
+/** Modelos de chat vivos en Groq (excluye whisper/tts/guard; prioriza llama). */
+async function listLiveGroqChatModels(key: string): Promise<string[]> {
+  try {
+    const res = await fetch("https://api.groq.com/openai/v1/models", {
+      headers: { Authorization: `Bearer ${key}` },
+    });
+    if (!res.ok) {
+      console.error(`[chat] Groq: no se pudo listar modelos (${res.status})`);
+      return [];
+    }
+    const data = await res.json();
+    const ids: string[] = (Array.isArray(data?.data) ? data.data : [])
+      .map((m: { id?: unknown }) => String(m?.id ?? ""))
+      .filter((id) => id !== "" && !/whisper|tts|guard/i.test(id))
+      .sort(
+        (a, b) =>
+          Number(/llama/i.test(b)) - Number(/llama/i.test(a)) || // llama primero
+          a.localeCompare(b), // orden estable entre despliegues
+      );
+    return ids;
+  } catch {
+    return [];
+  }
+}
+
 async function askGroq(history: Msg[], question: string, context: string) {
   const key = process.env.GROQ_API_KEY;
   if (!key) {
     console.error("[chat] GROQ_API_KEY no está definida en Vercel (Settings → Environment Variables → Redeploy)");
     return null;
   }
-  const model = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
-    body: JSON.stringify({
-      model,
-      temperature: 0.3,
-      max_tokens: Math.max(500, Number(process.env.GROQ_MAX_TOKENS || 2000)),
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        ...history,
-        { role: "user", content: `CONTEXTO:\n${context}\n\nPREGUNTA: ${question}` },
-      ],
-    }),
-  });
+  const configured = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+  const messages = [
+    { role: "system", content: SYSTEM_PROMPT },
+    ...history,
+    { role: "user", content: `CONTEXTO:\n${context}\n\nPREGUNTA: ${question}` },
+  ];
+
+  const callGroq = (model: string) =>
+    fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        model,
+        temperature: 0.3,
+        max_tokens: Math.max(500, Number(process.env.GROQ_MAX_TOKENS || 2000)),
+        messages,
+      }),
+    });
+
+  // 1er intento: modelo reparado memorizado o el configurado
+  let model = effectiveGroqModel ?? configured;
+  let res = await callGroq(model);
+
+  // Auto-reparación: 404 = modelo retirado de Groq
+  if (res.status === 404) {
+    console.warn(`[chat] Groq retiró "${model}" — buscando un modelo vigente…`);
+    const live = (await listLiveGroqChatModels(key)).filter((m) => m !== model);
+    for (const candidate of live.slice(0, 3)) {
+      console.warn(`[chat] Groq probando "${candidate}"…`);
+      res = await callGroq(candidate);
+      if (res.ok) {
+        effectiveGroqModel = candidate; // memorizado hasta el próximo despliegue
+        console.warn(`[chat] Groq auto-reparado: usando "${candidate}"`);
+        break;
+      }
+      if (res.status !== 404) break; // otro error (clave/cuota): probar más modelos no ayuda
+    }
+  }
+
   if (!res.ok) throw new Error(`Groq ${res.status}: ${(await res.text()).slice(0, 300)}`);
   const data = await res.json();
   return data?.choices?.[0]?.message?.content?.trim() || null;
@@ -189,8 +246,9 @@ export async function GET() {
     groq: {
       hasKey: Boolean(process.env.GROQ_API_KEY),
       model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+      effectiveModel: effectiveGroqModel, // modelo elegido por la auto-reparación (null = aún sin necesidad / usa "model")
       lastError: lastErrors.groq,
     },
-    note: "hasKey=false → añade la clave en Vercel y REDESPLIEGA. lastError=null → todavía no hay intentos desde el último deploy (haz una pregunta al chat y recarga).",
+    note: "hasKey=false → añade la clave en Vercel y REDESPLIEGA. lastError=null → todavía no hay intentos desde el último deploy (haz una pregunta al chat y recarga). groq.effectiveModel = modelo vigente que la auto-reparación eligió tras un 404 (se memoriza hasta el próximo deploy; null = usa groq.model).",
   });
 }

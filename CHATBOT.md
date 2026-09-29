@@ -42,6 +42,23 @@ Sube archivos `.pdf`, `.docx`, `.md` o `.txt` a la carpeta **`conocimiento/`** d
 > Recuerda: tras **agregar o cambiar** una variable en Vercel hay que **redesplegar**
 > (Deployments → ⋯ → Redeploy, o un commit cualquiera) para que surta efecto.
 
+## Diagnóstico del chat (si responde con fragmentos)
+
+Cuando el bot contesta "Esto es lo más relacionado que encontré" en lugar de redactar,
+es que Gemini **y** Groq fallaron. Abre **`/api/chat`** en el navegador (GET) y verás:
+
+- `hasKey` de cada proveedor → `false` significa que la clave no está en el entorno
+  (no la guardaste en Vercel, o falta el redespliegue después de añadirla).
+- `lastError` del último intento → ejemplos:
+  - `Gemini 429: ...` → cuota gratuita agotada (se resetea sola; Groq toma el relevo)
+  - `Groq 401: ...` → clave de Groq inválida (revisa que empiece con `gsk_`, sin espacios)
+  - `Groq 404: ...` → modelo retirado → cambia `GROQ_MODEL` por uno vigente
+    (lista actual en console.groq.com → Models)
+  - `Gemini 400: ... API key not valid` → rotar la clave
+
+Los `lastError` viven en memoria del servidor: se limpian con cada despliegue, así que
+haz una pregunta al chat **después** de desplegar y recarga `/api/chat` para verlos.
+
 ## Límites del plan gratis
 
 Google fija un número de peticiones por minuto y por día para el plan gratuito, y lo cambia de vez en cuando.

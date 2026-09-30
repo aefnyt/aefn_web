@@ -61,6 +61,10 @@ const lastErrors: Record<string, string | null> = { gemini: null, groq: null };
 /** Oculta cualquier fragmento de clave que pudiera aparecer en un mensaje de error. */
 const sanitize = (s: unknown) => String(s).replace(/(AIza|gsk_)[A-Za-z0-9_-]+/g, "$1***");
 
+/** Elimina caracteres de ancho cero que hacen que una respuesta "vacía" parezca llena (ej. "\u200B"). */
+const cleanAnswer = (raw: unknown) =>
+  (typeof raw === "string" ? raw.replace(/[\u200B-\u200F\uFEFF]/g, "") : "").trim();
+
 async function askGemini(history: Msg[], question: string, context: string) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) {
@@ -93,7 +97,7 @@ async function askGemini(history: Msg[], question: string, context: string) {
   }
   if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
   const data = await res.json();
-  const text = data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("").trim();
+  const text = cleanAnswer(data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join(""));
   if (!text) {
     console.error(`[chat] Gemini (${model}) devolvió respuesta vacía — finishReason: ${data?.candidates?.[0]?.finishReason ?? "?"}. Si es MAX_TOKENS, sube CHATBOT_MAX_OUTPUT_TOKENS.`);
   }
@@ -108,7 +112,26 @@ async function askGemini(history: Msg[], question: string, context: string) {
  */
 let effectiveGroqModel: string | null = null;
 
-/** Modelos de chat vivos en Groq (excluye whisper/tts/guard; prioriza llama). */
+/** Preferencia de modelos de Groq para la auto-reparación: número menor = se prueba antes. */
+function groqModelPriority(id: string): number {
+  const s = id.toLowerCase();
+  if (s.includes("gpt-oss")) return 0; // OpenAI open-weight — mejor calidad en Groq hoy
+  if (s.includes("kimi")) return 1; // Moonshot — fuerte multilingüe
+  if (s.includes("qwen")) return 2; // Alibaba — fuerte multilingüe
+  if (s.includes("llama")) return 3; // Meta — si Groq los trae de vuelta
+  if (s.includes("gemma")) return 4; // Google — decente multilingüe
+  if (s.includes("groq")) return 7; // compound y otros agénticos — no ideales para RAG
+  if (s.includes("allam")) return 8; // árabe-céntrico, pobre en español — último recurso
+  return 5; // desconocidos
+}
+
+/** Tamaño insinuado en el id ("-120b" > "-20b"): más grande primero en la misma familia. */
+function modelSize(id: string): number {
+  const m = id.match(/(\d+(?:\.\d+)?)b\b/i);
+  return m ? parseFloat(m[1]) : 0;
+}
+
+/** Modelos de chat vivos en Groq (excluye whisper/tts/guard; ordenados por preferencia). */
 async function listLiveGroqChatModels(key: string): Promise<string[]> {
   try {
     const res = await fetch("https://api.groq.com/openai/v1/models", {
@@ -124,7 +147,8 @@ async function listLiveGroqChatModels(key: string): Promise<string[]> {
       .filter((id) => id !== "" && !/whisper|tts|guard/i.test(id))
       .sort(
         (a, b) =>
-          Number(/llama/i.test(b)) - Number(/llama/i.test(a)) || // llama primero
+          groqModelPriority(a) - groqModelPriority(b) || // mejor familia primero
+          modelSize(b) - modelSize(a) || // más grande primero
           a.localeCompare(b), // orden estable entre despliegues
       );
     return ids;
@@ -146,8 +170,9 @@ async function askGroq(history: Msg[], question: string, context: string) {
     { role: "user", content: `CONTEXTO:\n${context}\n\nPREGUNTA: ${question}` },
   ];
 
-  const callGroq = (model: string) =>
-    fetch("https://api.groq.com/openai/v1/chat/completions", {
+  /** Una llamada: devuelve el contenido saneado (null si vacío) o el texto del error. */
+  const callGroq = async (model: string) => {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: JSON.stringify({
@@ -157,30 +182,37 @@ async function askGroq(history: Msg[], question: string, context: string) {
         messages,
       }),
     });
+    if (!res.ok) return { status: res.status, text: (await res.text()).slice(0, 300), content: null };
+    const data = await res.json().catch(() => null);
+    return { status: res.status, text: null as string | null, content: cleanAnswer(data?.choices?.[0]?.message?.content) || null };
+  };
 
   // 1er intento: modelo reparado memorizado o el configurado
-  let model = effectiveGroqModel ?? configured;
-  let res = await callGroq(model);
+  const first = effectiveGroqModel ?? configured;
+  let attempt = await callGroq(first);
 
-  // Auto-reparación: 404 = modelo retirado de Groq
-  if (res.status === 404) {
-    console.warn(`[chat] Groq retiró "${model}" — buscando un modelo vigente…`);
-    const live = (await listLiveGroqChatModels(key)).filter((m) => m !== model);
+  // Auto-reparación: 404 (modelo retirado) o 200 con respuesta vacía (modelo débil)
+  if (!attempt.content && (attempt.status === 404 || attempt.status === 200)) {
+    console.warn(
+      attempt.status === 404
+        ? `[chat] Groq retiró "${first}" — buscando un modelo vigente…`
+        : `[chat] Groq "${first}" respondió en blanco — buscando un modelo mejor…`,
+    );
+    const live = (await listLiveGroqChatModels(key)).filter((m) => m !== first);
     for (const candidate of live.slice(0, 3)) {
       console.warn(`[chat] Groq probando "${candidate}"…`);
-      res = await callGroq(candidate);
-      if (res.ok) {
+      attempt = await callGroq(candidate);
+      if (attempt.content) {
         effectiveGroqModel = candidate; // memorizado hasta el próximo despliegue
         console.warn(`[chat] Groq auto-reparado: usando "${candidate}"`);
         break;
       }
-      if (res.status !== 404) break; // otro error (clave/cuota): probar más modelos no ayuda
+      if (attempt.status !== 404 && attempt.status !== 200) break; // auth/cuota: probar más no ayuda
     }
   }
 
-  if (!res.ok) throw new Error(`Groq ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  const data = await res.json();
-  return data?.choices?.[0]?.message?.content?.trim() || null;
+  if (attempt.status !== 200) throw new Error(`Groq ${attempt.status}: ${attempt.text ?? "respuesta vacía"}`);
+  return attempt.content; // null → el POST continúa con el modo fragmentos
 }
 
 function fallbackAnswer(found: SearchResult[]) {

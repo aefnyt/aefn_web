@@ -133,7 +133,7 @@ export function Navbar() {
         </ul>
 
         <button
-          className="lg:hidden text-white"
+          className="lg:hidden text-white p-2.5 -mr-2.5"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Menú"
         >
@@ -149,7 +149,7 @@ export function Navbar() {
                 <Link
                   href={l.href}
                   onClick={() => setMobileOpen(false)}
-                  className="block px-3 py-2.5 text-neutral-300 hover:text-amber-400 transition-colors text-sm"
+                  className="block px-3 py-3 text-neutral-300 hover:text-amber-400 transition-colors text-sm"
                 >
                   {l.label}
                 </Link>
@@ -165,7 +165,7 @@ export function Navbar() {
                   target={r.external ? "_blank" : undefined}
                   rel={r.external ? "noopener noreferrer" : undefined}
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2.5 text-neutral-300 hover:text-amber-400 transition-colors text-sm"
+                  className="flex items-center gap-2 px-3 py-3 text-neutral-300 hover:text-amber-400 transition-colors text-sm"
                 >
                   <r.icon className="w-4 h-4 text-amber-500" strokeWidth={1.5} />
                   {r.label}

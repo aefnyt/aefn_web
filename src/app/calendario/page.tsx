@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Navbar, Footer, PageHeader, fadeUp } from "@/components/site-layout";
-import { MapPin, Clock, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import { MapPin, Clock, ChevronLeft, ChevronRight, Calendar, Mail } from "lucide-react";
 
 interface Evento {
   id: string;
@@ -58,6 +58,13 @@ export default function CalendarioPage() {
       .then((data) => {
         setEventos(data);
         setLoading(false);
+        // Si no hay eventos futuros, abrir el calendario en el último mes con actividad
+        const now = new Date();
+        const proximos = data.filter((e: Evento) => new Date(e.fecha) >= now);
+        if (proximos.length === 0 && data.length > 0) {
+          const ultimaFecha = new Date(Math.max(...data.map((e: Evento) => new Date(e.fecha).getTime())));
+          setCurrentMonth(new Date(ultimaFecha.getFullYear(), ultimaFecha.getMonth(), 1));
+        }
       })
       .catch(() => setLoading(false));
   }, []);
@@ -250,14 +257,28 @@ export default function CalendarioPage() {
       </section>
 
       {/* Lista de próximos eventos */}
-      {proximos.length > 0 && (
-        <section className="bg-neutral-950 py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-12">
-              <p className="text-amber-400 text-sm font-light tracking-widest uppercase mb-3">Próximos eventos</p>
-              <h2 className="text-3xl sm:text-4xl font-light text-white">Agenda próxima</h2>
+      <section className="bg-neutral-950 py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-12">
+            <p className="text-amber-400 text-sm font-light tracking-widest uppercase mb-3">Próximos eventos</p>
+            <h2 className="text-3xl sm:text-4xl font-light text-white">Agenda próxima</h2>
+          </div>
+          {proximos.length === 0 ? (
+            <div className="border border-neutral-800 bg-neutral-900/50 p-10 sm:p-14 text-center max-w-2xl mx-auto">
+              <Calendar className="w-12 h-12 text-amber-400 mx-auto mb-5" strokeWidth={1.5} />
+              <p className="text-neutral-200 font-normal text-lg mb-2">No hay eventos próximos programados</p>
+              <p className="text-neutral-400 font-light mb-8">Navega por el historial inferior o escríbenos para proponer una nueva actividad para la comunidad.</p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <a href="mailto:aefn@yachaytech.edu.ec?subject=Propuesta%20de%20evento%20AEFN" className="inline-flex items-center gap-2 text-sm font-normal text-neutral-950 bg-amber-400 hover:bg-amber-300 transition-colors px-6 py-3 rounded-sm">
+                  <Mail className="w-4 h-4" />Propón un evento
+                </a>
+                <a href="https://www.instagram.com/aefn_yt/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-normal text-neutral-200 border border-neutral-700 hover:border-amber-400 hover:text-amber-400 transition-colors px-6 py-3 rounded-sm">
+                  Síguenos en Instagram
+                </a>
+              </div>
             </div>
-            <div className="space-y-px bg-neutral-800">
+          ) : (
+          <div className="space-y-px bg-neutral-800">
               {proximos.map((e, i) => (
                 <motion.div
                   key={e.id}
@@ -287,9 +308,9 @@ export default function CalendarioPage() {
                 </motion.div>
               ))}
             </div>
-          </div>
-        </section>
-      )}
+          )}
+        </div>
+      </section>
 
       {/* Eventos pasados */}
       {pasados.length > 0 && (

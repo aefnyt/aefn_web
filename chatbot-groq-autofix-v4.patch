@@ -1,0 +1,188 @@
+diff --git a/CHATBOT.md b/CHATBOT.md
+index 38ecef5..be4e34c 100644
+--- a/CHATBOT.md
++++ b/CHATBOT.md
+@@ -52,8 +52,13 @@ es que Gemini **y** Groq fallaron. Abre **`/api/chat`** en el navegador (GET) y
+ - `lastError` del último intento → ejemplos:
+   - `Gemini 429: ...` → cuota gratuita agotada (se resetea sola; Groq toma el relevo)
+   - `Groq 401: ...` → clave de Groq inválida (revisa que empiece con `gsk_`, sin espacios)
+-  - `Groq 404: ...` → modelo retirado → cambia `GROQ_MODEL` por uno vigente
+-    (lista actual en console.groq.com → Models)
++  - `Groq 404: ...` → modelo retirado. **Se auto-repara solo**: el bot consulta la lista
++    de modelos vigentes de Groq, prueba hasta 3 elegidos por calidad (prioridad:
++    gpt-oss > kimi > qwen > llama > gemma; más grandes primero) y memoriza el que
++    responda. También se repara solo si un modelo responde `200` **en blanco**
++    (pasa con modelos pequeños). `GET /api/chat` → `groq.effectiveModel` muestra el
++    modelo elegido (`null` = no ha hecho falta reparar; usa `groq.model`). Si
++    prefieres fijar uno concreto, cambia `GROQ_MODEL` en Vercel (y redespliega).
+   - `Gemini 400: ... API key not valid` → rotar la clave
+ 
+ Los `lastError` viven en memoria del servidor: se limpian con cada despliegue, así que
+diff --git a/src/app/api/chat/route.ts b/src/app/api/chat/route.ts
+index e61c3e6..66e2630 100644
+--- a/src/app/api/chat/route.ts
++++ b/src/app/api/chat/route.ts
+@@ -61,6 +61,10 @@ const lastErrors: Record<string, string | null> = { gemini: null, groq: null };
+ /** Oculta cualquier fragmento de clave que pudiera aparecer en un mensaje de error. */
+ const sanitize = (s: unknown) => String(s).replace(/(AIza|gsk_)[A-Za-z0-9_-]+/g, "$1***");
+ 
++/** Elimina caracteres de ancho cero que hacen que una respuesta "vacía" parezca llena (ej. "\u200B"). */
++const cleanAnswer = (raw: unknown) =>
++  (typeof raw === "string" ? raw.replace(/[\u200B-\u200F\uFEFF]/g, "") : "").trim();
++
+ async function askGemini(history: Msg[], question: string, context: string) {
+   const key = process.env.GEMINI_API_KEY;
+   if (!key) {
+@@ -93,37 +97,122 @@ async function askGemini(history: Msg[], question: string, context: string) {
+   }
+   if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
+   const data = await res.json();
+-  const text = data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("").trim();
++  const text = cleanAnswer(data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join(""));
+   if (!text) {
+     console.error(`[chat] Gemini (${model}) devolvió respuesta vacía — finishReason: ${data?.candidates?.[0]?.finishReason ?? "?"}. Si es MAX_TOKENS, sube CHATBOT_MAX_OUTPUT_TOKENS.`);
+   }
+   return text || null;
+ }
+ 
++// ---------- Groq: auto-reparación de modelo ----------
++/**
++ * Groq depreca modelos con frecuencia (error 404 "model not found"). Cuando
++ * pasa, se consulta la lista de modelos vigentes y se elige uno de chat.
++ * La elección se memoriza aquí (variable de módulo) hasta el próximo despliegue.
++ */
++let effectiveGroqModel: string | null = null;
++
++/** Preferencia de modelos de Groq para la auto-reparación: número menor = se prueba antes. */
++function groqModelPriority(id: string): number {
++  const s = id.toLowerCase();
++  if (s.includes("gpt-oss")) return 0; // OpenAI open-weight — mejor calidad en Groq hoy
++  if (s.includes("kimi")) return 1; // Moonshot — fuerte multilingüe
++  if (s.includes("qwen")) return 2; // Alibaba — fuerte multilingüe
++  if (s.includes("llama")) return 3; // Meta — si Groq los trae de vuelta
++  if (s.includes("gemma")) return 4; // Google — decente multilingüe
++  if (s.includes("groq")) return 7; // compound y otros agénticos — no ideales para RAG
++  if (s.includes("allam")) return 8; // árabe-céntrico, pobre en español — último recurso
++  return 5; // desconocidos
++}
++
++/** Tamaño insinuado en el id ("-120b" > "-20b"): más grande primero en la misma familia. */
++function modelSize(id: string): number {
++  const m = id.match(/(\d+(?:\.\d+)?)b\b/i);
++  return m ? parseFloat(m[1]) : 0;
++}
++
++/** Modelos de chat vivos en Groq (excluye whisper/tts/guard; ordenados por preferencia). */
++async function listLiveGroqChatModels(key: string): Promise<string[]> {
++  try {
++    const res = await fetch("https://api.groq.com/openai/v1/models", {
++      headers: { Authorization: `Bearer ${key}` },
++    });
++    if (!res.ok) {
++      console.error(`[chat] Groq: no se pudo listar modelos (${res.status})`);
++      return [];
++    }
++    const data = await res.json();
++    const ids: string[] = (Array.isArray(data?.data) ? data.data : [])
++      .map((m: { id?: unknown }) => String(m?.id ?? ""))
++      .filter((id) => id !== "" && !/whisper|tts|guard/i.test(id))
++      .sort(
++        (a, b) =>
++          groqModelPriority(a) - groqModelPriority(b) || // mejor familia primero
++          modelSize(b) - modelSize(a) || // más grande primero
++          a.localeCompare(b), // orden estable entre despliegues
++      );
++    return ids;
++  } catch {
++    return [];
++  }
++}
++
+ async function askGroq(history: Msg[], question: string, context: string) {
+   const key = process.env.GROQ_API_KEY;
+   if (!key) {
+     console.error("[chat] GROQ_API_KEY no está definida en Vercel (Settings → Environment Variables → Redeploy)");
+     return null;
+   }
+-  const model = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+-    method: "POST",
+-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+-    body: JSON.stringify({
+-      model,
+-      temperature: 0.3,
+-      max_tokens: Math.max(500, Number(process.env.GROQ_MAX_TOKENS || 2000)),
+-      messages: [
+-        { role: "system", content: SYSTEM_PROMPT },
+-        ...history,
+-        { role: "user", content: `CONTEXTO:\n${context}\n\nPREGUNTA: ${question}` },
+-      ],
+-    }),
+-  });
+-  if (!res.ok) throw new Error(`Groq ${res.status}: ${(await res.text()).slice(0, 300)}`);
+-  const data = await res.json();
+-  return data?.choices?.[0]?.message?.content?.trim() || null;
++  const configured = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
++  const messages = [
++    { role: "system", content: SYSTEM_PROMPT },
++    ...history,
++    { role: "user", content: `CONTEXTO:\n${context}\n\nPREGUNTA: ${question}` },
++  ];
++
++  /** Una llamada: devuelve el contenido saneado (null si vacío) o el texto del error. */
++  const callGroq = async (model: string) => {
++    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
++      method: "POST",
++      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
++      body: JSON.stringify({
++        model,
++        temperature: 0.3,
++        max_tokens: Math.max(500, Number(process.env.GROQ_MAX_TOKENS || 2000)),
++        messages,
++      }),
++    });
++    if (!res.ok) return { status: res.status, text: (await res.text()).slice(0, 300), content: null };
++    const data = await res.json().catch(() => null);
++    return { status: res.status, text: null as string | null, content: cleanAnswer(data?.choices?.[0]?.message?.content) || null };
++  };
++
++  // 1er intento: modelo reparado memorizado o el configurado
++  const first = effectiveGroqModel ?? configured;
++  let attempt = await callGroq(first);
++
++  // Auto-reparación: 404 (modelo retirado) o 200 con respuesta vacía (modelo débil)
++  if (!attempt.content && (attempt.status === 404 || attempt.status === 200)) {
++    console.warn(
++      attempt.status === 404
++        ? `[chat] Groq retiró "${first}" — buscando un modelo vigente…`
++        : `[chat] Groq "${first}" respondió en blanco — buscando un modelo mejor…`,
++    );
++    const live = (await listLiveGroqChatModels(key)).filter((m) => m !== first);
++    for (const candidate of live.slice(0, 3)) {
++      console.warn(`[chat] Groq probando "${candidate}"…`);
++      attempt = await callGroq(candidate);
++      if (attempt.content) {
++        effectiveGroqModel = candidate; // memorizado hasta el próximo despliegue
++        console.warn(`[chat] Groq auto-reparado: usando "${candidate}"`);
++        break;
++      }
++      if (attempt.status !== 404 && attempt.status !== 200) break; // auth/cuota: probar más no ayuda
++    }
++  }
++
++  if (attempt.status !== 200) throw new Error(`Groq ${attempt.status}: ${attempt.text ?? "respuesta vacía"}`);
++  return attempt.content; // null → el POST continúa con el modo fragmentos
+ }
+ 
+ function fallbackAnswer(found: SearchResult[]) {
+@@ -189,8 +278,9 @@ export async function GET() {
+     groq: {
+       hasKey: Boolean(process.env.GROQ_API_KEY),
+       model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
++      effectiveModel: effectiveGroqModel, // modelo elegido por la auto-reparación (null = aún sin necesidad / usa "model")
+       lastError: lastErrors.groq,
+     },
+-    note: "hasKey=false → añade la clave en Vercel y REDESPLIEGA. lastError=null → todavía no hay intentos desde el último deploy (haz una pregunta al chat y recarga).",
++    note: "hasKey=false → añade la clave en Vercel y REDESPLIEGA. lastError=null → todavía no hay intentos desde el último deploy (haz una pregunta al chat y recarga). groq.effectiveModel = modelo vigente que la auto-reparación eligió tras un 404 (se memoriza hasta el próximo deploy; null = usa groq.model).",
+   });
+ }

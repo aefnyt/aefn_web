@@ -22,6 +22,7 @@ import {
   Waves,
   Brain,
   Users,
+  Calendar,
 } from "lucide-react";
 
 const fadeUp = {
@@ -117,15 +118,15 @@ function Navbar() {
             )}
           </li>
         </ul>
-        <button className="lg:hidden text-white" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menú">{mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}</button>
+        <button className="lg:hidden text-white p-2.5 -mr-2.5" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menú">{mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}</button>
       </nav>
       {mobileOpen && (
         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="lg:hidden bg-neutral-950 border-t border-neutral-800 mt-3">
           <ul className="px-4 py-4 space-y-1">
-            {links.map((l) => (<li key={l.label}><a href={l.href} onClick={() => setMobileOpen(false)} className="block px-3 py-2.5 text-neutral-300 hover:text-amber-400 transition-colors text-sm">{l.label}</a></li>))}
+            {links.map((l) => (<li key={l.label}><a href={l.href} onClick={() => setMobileOpen(false)} className="block px-3 py-3 text-neutral-300 hover:text-amber-400 transition-colors text-sm">{l.label}</a></li>))}
             <li className="pt-2 mt-2 border-t border-neutral-800">
               <div className="px-3 py-1.5 text-[10px] text-amber-400/70 uppercase tracking-widest font-light">Recursos</div>
-              {recursos.map((r) => (<a key={r.label} href={r.href} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-3 py-2.5 text-neutral-300 hover:text-amber-400 transition-colors text-sm"><r.icon className="w-4 h-4 text-amber-500" strokeWidth={1.5} />{r.label}<ExternalLink className="w-3 h-3 text-neutral-500" /></a>))}
+              {recursos.map((r) => (<a key={r.label} href={r.href} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-3 py-3 text-neutral-300 hover:text-amber-400 transition-colors text-sm"><r.icon className="w-4 h-4 text-amber-500" strokeWidth={1.5} />{r.label}<ExternalLink className="w-3 h-3 text-neutral-500" /></a>))}
             </li>
           </ul>
         </motion.div>
@@ -180,13 +181,13 @@ function Hero() {
         })}
         {slides.length === 0 && (<div className="absolute inset-0 bg-gradient-to-br from-neutral-900 to-neutral-950" />)}
       </motion.div>
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80 sm:from-black/60 sm:via-black/45 sm:to-black/80 pointer-events-none" />
       <motion.div style={{ opacity }} className="relative h-full flex flex-col justify-end max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="max-w-3xl">
           <img src="/images/logos/ecfn-logo.png" alt="ECFN" className="h-14 w-auto mb-6 object-contain" />
-          <p className="text-amber-400 text-sm font-light tracking-widest uppercase mb-4">ECFN · Yachay Tech · Ecuador</p>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[1.1] mb-6">Asociación de Estudiantes de <span className="text-amber-400">Física y Nanotecnología</span></h1>
-          <p className="text-lg sm:text-xl text-neutral-200 mb-8 font-light leading-relaxed max-w-2xl">Explora lo infinitesimal y lo cósmico. Comunidad científica estudiantil dedicada a la investigación, la innovación y la difusión del conocimiento.</p>
+          <p className="text-amber-400 text-sm font-light tracking-widest uppercase mb-4 [text-shadow:0_1px_8px_rgb(0_0_0_/_0.6)]">ECFN · Yachay Tech · Ecuador</p>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[1.1] mb-6 [text-shadow:0_2px_16px_rgb(0_0_0_/_0.55)]">Asociación de Estudiantes de <span className="text-amber-400">Física y Nanotecnología</span></h1>
+          <p className="text-lg sm:text-xl text-neutral-200 mb-8 font-light leading-relaxed max-w-2xl [text-shadow:0_1px_10px_rgb(0_0_0_/_0.6)]">Explora lo infinitesimal y lo cósmico. Comunidad científica estudiantil dedicada a la investigación, la innovación y la difusión del conocimiento.</p>
           <div className="flex flex-wrap items-center gap-4">
             <a href="#areas" className="inline-flex items-center gap-2 text-sm font-normal text-neutral-950 bg-amber-400 hover:bg-amber-300 transition-colors px-6 py-3 rounded-sm">Explorar áreas<ArrowRight className="w-4 h-4" /></a>
             <a href="/noticias" className="inline-flex items-center gap-2 text-sm font-normal text-white border border-white/30 hover:border-amber-400 hover:text-amber-400 transition-colors px-6 py-3 rounded-sm">Ver noticias</a>
@@ -256,7 +257,7 @@ const mesesHome = ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","
 function Events() {
   const [eventos, setEventos] = useState<Evento[]>([]);
   useEffect(() => { fetch("/data/events.json").then((r) => r.json()).then((data) => { const now = new Date(); const proximos = data.filter((e: Evento) => new Date(e.fecha) >= now).sort((a: Evento, b: Evento) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()).slice(0, 3); setEventos(proximos); }).catch(() => {}); }, []);
-  return (<section className="bg-neutral-950 py-24 lg:py-32"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="flex flex-wrap items-end justify-between gap-4 mb-12"><div className="max-w-2xl"><p className="text-amber-400 text-sm font-light tracking-widest uppercase mb-3">Próximos eventos</p><h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-white leading-tight">Agenda científica</h2></div><a href="/calendario" className="inline-flex items-center gap-1.5 text-sm text-amber-400 hover:text-amber-300 transition-colors font-normal border-b border-amber-400/30 hover:border-amber-400 pb-1">Ver calendario<ArrowRight className="w-4 h-4" /></a></motion.div>{eventos.length === 0 ? <p className="text-neutral-500 font-light text-sm">No hay eventos próximos.</p> : (<div className="space-y-px bg-neutral-800">{eventos.map((e, i) => { const fecha = new Date(e.fecha); return (<motion.a key={e.id} href="/calendario" custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group flex items-center gap-6 bg-neutral-950 hover:bg-neutral-900 transition-colors p-6"><div className="flex-shrink-0 text-center w-16"><div className="text-3xl font-light text-amber-400">{fecha.getDate()}</div><div className="text-xs text-neutral-500 uppercase tracking-widest font-light">{mesesHome[fecha.getMonth()]}</div></div><div className="flex-grow"><div className="text-xs text-amber-400 font-normal uppercase tracking-wider mb-1">{tipoLabelsHome[e.tipo] || e.tipo}</div><h3 className="font-normal text-white text-lg group-hover:text-amber-300 transition-colors">{e.titulo}</h3>{e.ubicacion && <p className="text-sm text-neutral-400 font-light mt-1 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{e.ubicacion}</p>}</div><ArrowRight className="w-6 h-6 text-neutral-500 group-hover:text-amber-400 group-hover:translate-x-1 transition-all flex-shrink-0" /></motion.a>); })}</div>)}</div></section>);
+  return (<section className="bg-neutral-950 py-24 lg:py-32"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="flex flex-wrap items-end justify-between gap-4 mb-12"><div className="max-w-2xl"><p className="text-amber-400 text-sm font-light tracking-widest uppercase mb-3">Próximos eventos</p><h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-white leading-tight">Agenda científica</h2></div><a href="/calendario" className="inline-flex items-center gap-1.5 text-sm text-amber-400 hover:text-amber-300 transition-colors font-normal border-b border-amber-400/30 hover:border-amber-400 pb-1">Ver calendario<ArrowRight className="w-4 h-4" /></a></motion.div>{eventos.length === 0 ? (<div className="border border-neutral-800 bg-neutral-900/50 p-10 sm:p-12 text-center max-w-xl"><Calendar className="w-10 h-10 text-amber-400 mx-auto mb-5" strokeWidth={1.5} /><p className="text-neutral-200 font-normal text-lg mb-2">No hay eventos programados por ahora</p><p className="text-neutral-400 font-light mb-8">Estamos planificando nuevas actividades científicas. Vuelve pronto o escríbenos para proponer la tuya.</p><div className="flex flex-wrap items-center justify-center gap-3"><a href="/calendario" className="inline-flex items-center gap-2 text-sm font-normal text-neutral-950 bg-amber-400 hover:bg-amber-300 transition-colors px-6 py-3 rounded-sm">Ver calendario completo<ArrowRight className="w-4 h-4" /></a><a href="mailto:aefn@yachaytech.edu.ec?subject=Propuesta%20de%20evento%20AEFN" className="inline-flex items-center gap-2 text-sm font-normal text-neutral-200 border border-neutral-700 hover:border-amber-400 hover:text-amber-400 transition-colors px-6 py-3 rounded-sm"><Mail className="w-4 h-4" />Propón un evento</a></div></div>) : (<div className="space-y-px bg-neutral-800">{eventos.map((e, i) => { const fecha = new Date(e.fecha); return (<motion.a key={e.id} href="/calendario" custom={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="group flex items-center gap-6 bg-neutral-950 hover:bg-neutral-900 transition-colors p-6"><div className="flex-shrink-0 text-center w-16"><div className="text-3xl font-light text-amber-400">{fecha.getDate()}</div><div className="text-xs text-neutral-500 uppercase tracking-widest font-light">{mesesHome[fecha.getMonth()]}</div></div><div className="flex-grow"><div className="text-xs text-amber-400 font-normal uppercase tracking-wider mb-1">{tipoLabelsHome[e.tipo] || e.tipo}</div><h3 className="font-normal text-white text-lg group-hover:text-amber-300 transition-colors">{e.titulo}</h3>{e.ubicacion && <p className="text-sm text-neutral-400 font-light mt-1 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{e.ubicacion}</p>}</div><ArrowRight className="w-6 h-6 text-neutral-500 group-hover:text-amber-400 group-hover:translate-x-1 transition-all flex-shrink-0" /></motion.a>); })}</div>)}</div></section>);
 }
 
 /* ─── CLUBS ─── */
